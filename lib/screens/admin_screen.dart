@@ -494,7 +494,7 @@ class _AdminScreenState extends State<AdminScreen> {
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => Container(
                               height: 160,
-                              color: Theme.of(context).colorScheme.surfaceVariant,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
                               child: const Center(child: Icon(Icons.broken_image, size: 48)),
                             ),
                           ),
@@ -523,7 +523,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                         errorBuilder: (_, __, ___) => Container(
                                           width: 100,
                                           height: 72,
-                                          color: Theme.of(context).colorScheme.surfaceVariant,
+                                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                           child: const Icon(Icons.broken_image, size: 20),
                                         ),
                                       ),

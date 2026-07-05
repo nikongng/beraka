@@ -55,7 +55,7 @@ class _MenuScreenState extends State<MenuScreen> {
       builder: (dialogContext) {
         return Dialog(
           elevation: 24,
-          shadowColor: Colors.black.withOpacity(0.2),
+          shadowColor: Colors.black.withValues(alpha: 0.2),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: SizedBox(
             width: Responsive.isDesktop(context) ? 900 : double.infinity,
@@ -252,7 +252,7 @@ class _PackageDialogContent extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppTheme.secondary.withOpacity(.16),
+                color: AppTheme.secondary.withValues(alpha: .16),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Text(
@@ -393,11 +393,11 @@ class _PackageCardState extends State<_PackageCard> {
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: _hover ? accent.withOpacity(.55) : Theme.of(context).colorScheme.outline,
+            color: _hover ? accent.withValues(alpha: .55) : Theme.of(context).colorScheme.outline,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(_hover ? .08 : .03),
+              color: Colors.black.withValues(alpha: _hover ? .08 : .03),
               blurRadius: _hover ? 20 : 10,
               offset: Offset(0, _hover ? 10 : 4),
             ),
@@ -436,7 +436,7 @@ class _PackageCardState extends State<_PackageCard> {
                   onPressed: () => widget.onView(package),
                   icon: const Icon(Icons.remove_red_eye_rounded),
                   tooltip: 'Voir',
-                  color: accent.withOpacity(0.8),
+                  color: accent.withValues(alpha: 0.8),
                 ),
               ],
             ),
@@ -471,7 +471,7 @@ class _CategorySelector extends StatelessWidget {
           selectedColor: AppTheme.primary,
           backgroundColor: Colors.white,
           side: BorderSide(
-            color: selected ? AppTheme.primary : AppTheme.primary.withOpacity(.16),
+            color: selected ? AppTheme.primary : AppTheme.primary.withValues(alpha: .16),
           ),
           labelStyle: TextStyle(
             color: selected ? Colors.white : AppTheme.lightText,

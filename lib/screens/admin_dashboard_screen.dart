@@ -126,7 +126,7 @@ class _PulsingSkeletonState extends State<_PulsingSkeleton>
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant,
+          color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(widget.borderRadius),
         ),
       ),
@@ -216,7 +216,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Theme.of(context).colorScheme.onBackground.withValues(alpha: 0.5),
+      barrierColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
       builder: (context) {
         final dateStr = '${reservation.date.day.toString().padLeft(2, '0')}/${reservation.date.month.toString().padLeft(2, '0')}/${reservation.date.year}';
         final timeStr = reservation.time.format(context);
@@ -237,7 +237,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   width: 48,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceVariant,
+                    color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -545,7 +545,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.inbox_rounded, size: 64, color: theme.colorScheme.surfaceVariant),
+                      Icon(Icons.inbox_rounded, size: 64, color: theme.colorScheme.surfaceContainerHighest),
                       const SizedBox(height: 16),
                       Text(
                         'Aucune réservation trouvée',
@@ -677,7 +677,7 @@ class _StatCardState extends State<_StatCard> {
                           decoration: BoxDecoration(
                             color: widget.trend!.contains('+') 
                               ? AppTheme.success.withValues(alpha: 0.1)
-                              : Theme.of(context).colorScheme.surfaceVariant,
+                              : Theme.of(context).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -744,7 +744,7 @@ class _ReservationTileState extends State<_ReservationTile> {
             ),
             boxShadow: [
               BoxShadow(
-                color: theme.shadowColor.withOpacity(_isHovered ? 0.04 : 0.01),
+                color: theme.shadowColor.withValues(alpha: _isHovered ? 0.04 : 0.01),
                 blurRadius: _isHovered ? 16 : 8,
                 offset: const Offset(0, 4),
               ),
@@ -836,7 +836,7 @@ class _StatusBadge extends StatelessWidget {
       bgColor = AppTheme.danger.withValues(alpha: 0.12);
       textColor = AppTheme.danger;
     } else {
-      bgColor = theme.colorScheme.surfaceVariant;
+      bgColor = theme.colorScheme.surfaceContainerHighest;
       textColor = theme.colorScheme.onSurfaceVariant;
     }
 
@@ -920,7 +920,7 @@ class _DetailRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant,
+            color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: theme.colorScheme.onSurfaceVariant, size: 20),

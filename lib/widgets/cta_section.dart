@@ -42,7 +42,7 @@ class CTASection extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: theme.shadowColor.withOpacity(.15),
+                color: theme.shadowColor.withValues(alpha: .15),
                 blurRadius: 35,
                 offset: const Offset(0, 20),
               ),
@@ -78,7 +78,7 @@ class CTASection extends StatelessWidget {
             vertical: 8,
           ),
           decoration: BoxDecoration(
-            color: theme.colorScheme.onPrimary.withOpacity(.15),
+            color: theme.colorScheme.onPrimary.withValues(alpha: .15),
             borderRadius: BorderRadius.circular(30),
           ),
           child: Text(
@@ -107,7 +107,7 @@ class CTASection extends StatelessWidget {
         Text(
           "Mariages • Conférences • Banquets • Anniversaires • Réceptions privées",
           style: TextStyle(
-            color: theme.colorScheme.onPrimary.withOpacity(.7),
+            color: theme.colorScheme.onPrimary.withValues(alpha: .7),
             fontSize: 17,
             height: 1.8,
           ),

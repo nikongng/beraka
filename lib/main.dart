@@ -8,7 +8,6 @@ import 'screens/home_screen.dart';
 import 'screens/menu_screen.dart';
 import 'screens/apartments_screen.dart';
 import 'screens/reservation_screen.dart';
-import 'screens/bookings_screen.dart';
 import 'screens/contact_screen.dart';
 import 'screens/about_screen.dart';
 import 'screens/admin_screen.dart';

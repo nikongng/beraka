@@ -94,7 +94,7 @@ class FooterSection extends StatelessWidget {
               ),
               const SizedBox(height: 50),
               Divider(
-                color: theme.colorScheme.onPrimary.withOpacity(.08),
+                color: theme.colorScheme.onPrimary.withValues(alpha: .08),
               ),
               const SizedBox(height: 25),
               mobile
@@ -229,7 +229,7 @@ class _Social extends StatelessWidget {
       width: 42,
       height: 42,
       decoration: BoxDecoration(
-        color: theme.colorScheme.onPrimary.withOpacity(.1),
+        color: theme.colorScheme.onPrimary.withValues(alpha: .1),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Icon(

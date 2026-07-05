@@ -33,9 +33,9 @@ class HeroSection extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              theme.colorScheme.onBackground.withOpacity(.70),
-              theme.colorScheme.onBackground.withOpacity(.45),
-              theme.colorScheme.onBackground.withOpacity(.20),
+              theme.colorScheme.onSurface.withValues(alpha: .70),
+              theme.colorScheme.onSurface.withValues(alpha: .45),
+              theme.colorScheme.onSurface.withValues(alpha: .20),
             ],
             begin: Alignment.bottomLeft,
             end: Alignment.topRight,
@@ -121,7 +121,7 @@ class HeroSection extends StatelessWidget {
                 label: const Text("Voir le menu"),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  side: BorderSide(color: theme.colorScheme.onBackground),
+                  side: BorderSide(color: theme.colorScheme.onSurface),
                 ),
               ),
             ],
@@ -176,10 +176,10 @@ class _InfoCard extends StatelessWidget {
       width: 170,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(.12),
+        color: theme.colorScheme.surface.withValues(alpha: .12),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: theme.colorScheme.onSurface.withOpacity(.24),
+          color: theme.colorScheme.onSurface.withValues(alpha: .24),
         ),
       ),
       child: Column(

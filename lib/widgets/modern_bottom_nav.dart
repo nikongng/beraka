@@ -40,10 +40,10 @@ class ModernBottomNav extends StatelessWidget {
             child: Container(
               height: 76,
               decoration: BoxDecoration(
-                color: theme.colorScheme.surface.withOpacity(0.85),
+                color: theme.colorScheme.surface.withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(35),
                 border: Border.all(
-                  color: theme.colorScheme.surface.withOpacity(0.6),
+                  color: theme.colorScheme.surface.withValues(alpha: 0.6),
                   width: 1.5,
                 ),
                 boxShadow: [
