@@ -1,0 +1,53 @@
+import 'models.dart';
+
+class Pages {
+  static const int hallCapacity = 300;
+
+  static final List<Dish> menu = [
+    Dish(
+      id: 'dish-1',
+      name: 'Carpaccio de bœuf',
+      category: 'Entrées',
+      description: 'Fines tranches de viande, huile d’olive et parmesan.',
+      price: 14,
+      imageUrl: 'flutter_02.png',
+    ),
+    Dish(
+      id: 'dish-2',
+      name: 'Soupe de poisson',
+      category: 'Entrées',
+      description: 'Bouillon parfumé aux herbes fraîches.',
+      price: 11,
+      imageUrl: 'flutter_02.png',
+    ),
+    Dish(
+      id: 'dish-3',
+      name: 'Filet de bœuf',
+      category: 'Plats',
+      description: 'Viande tendre, purée maison et sauce au poivre.',
+      price: 28,
+      imageUrl: 'flutter_02.png',
+    ),
+    Dish(
+      id: 'dish-4',
+      name: 'Poisson grillé',
+      category: 'Plats',
+      description: 'Filet du jour grillé au beurre citronné.',
+      price: 24,
+      imageUrl: 'flutter_02.png',
+    ),
+  ];
+
+  static final List<Map<String, dynamic>> reviews = [
+    {'author': 'Chloé', 'rating': 5, 'comment': 'Ambiance parfaite et personnel attentionné.'},
+    {'author': 'Lucas', 'rating': 4, 'comment': 'Plats délicieux, je recommande la soupe de poisson.'},
+  ];
+
+  static final List<Map<String, String>> gallery = [
+    {'label': 'Salle', 'image': 'flutter_02.png'},
+    {'label': 'Plats', 'image': 'flutter_02.png'},
+    {'label': 'Boissons', 'image': 'flutter_01.png'},
+    {'label': 'Ambiance', 'image': 'flutter_02.png'},
+    {'label': 'Événement', 'image': 'flutter_01.png'},
+  ];
+}

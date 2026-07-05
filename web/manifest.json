@@ -1,0 +1,9 @@
+{
+  "name": "Beraca's valley Hôtel Restaurant",
+  "short_name": "Beraca's",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0B6E4F",
+  "description": "Application de gestion d'hôtel restaurant"
+}

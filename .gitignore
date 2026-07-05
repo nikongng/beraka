@@ -1,0 +1,15 @@
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.idea/
+.vscode/
+build/
+ios/Flutter/.symlinks
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+\.dart_tool/
+.pub-cache/
+**/generated_plugin_registrant.dart
+**/flutter_export_environment.sh
+assets/.env
