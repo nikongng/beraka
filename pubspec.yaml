@@ -39,5 +39,6 @@ flutter:
     - assets/images/
     - flutter_01.png
     - flutter_02.png
+    - assets/.env
 dependency_overrides:
   sign_in_with_apple: ^8.1.0
