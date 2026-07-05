@@ -1,0 +1,38 @@
+workflows:
+  # --- 1. WORKFLOW POUR ANDROID ---
+  android-release:
+    name: Build Android APK
+    working_directory: flutter_app
+    environment:
+      groups:
+        - default
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build Android APK
+        script: |
+          flutter build apk --release \
+            --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+  # --- 2. WORKFLOW POUR LE WEB ---
+  web-release:
+    name: Build Flutter Web
+    working_directory: flutter_app
+    environment:
+      groups:
+        - default
+    scripts:
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build Web
+        script: |
+          flutter build web --release \
+            --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+    artifacts:
+      - build/web/**
