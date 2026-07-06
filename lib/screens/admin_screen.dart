@@ -1,7 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
+import 'package:beraca/theme/app_theme.dart';
 
 import '../models.dart';
 import '../services/gemini_service.dart';

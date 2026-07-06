@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:beraka_hotel_restaurant/data.dart';
-import 'package:beraka_hotel_restaurant/services/gemini_service.dart';
+import 'package:beraca/data.dart';
+import 'package:beraca/services/gemini_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

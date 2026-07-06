@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
+import 'package:beraca/theme/app_theme.dart';
 
 class ModernDrawer extends StatelessWidget {
   final int currentIndex;
@@ -14,7 +14,7 @@ class ModernDrawer extends StatelessWidget {
 
   static const _menus = [
     ("Accueil", Icons.home_rounded),
-    ("Menu", Icons.restaurant_menu_rounded),
+    ("Menu", Icons.menu_rounded),
     ("Appartements", Icons.apartment_rounded),
     ("Mes réservations", Icons.history_rounded),
     ("Contact", Icons.call_rounded),
@@ -136,7 +136,7 @@ class ModernDrawer extends StatelessWidget {
                 Icons.phone_rounded,
                 color: AppTheme.primary,
               ),
-              title: const Text("+243 XXX XXX XXX"),
+              title: const Text("+243 998 833 016"),
               subtitle: const Text("Réception"),
             ),
 

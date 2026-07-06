@@ -74,8 +74,8 @@ class AboutScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Beraca\'s Hôtel Restaurant est un établissement chaleureux dédié à la gastronomie locale et internationale. ' 
-          'Nous offrons une expérience culinaire de qualité, un service attentionné et un cadre élégant pour toutes vos occasions.',
+          'Beraca\'s valley  est un établissement chaleureux dédié à la reception des vos événements. ' 
+          'Nous offrons une expérience événementielle de qualité, un service attentionné et un cadre élégant pour toutes vos occasions.',
           style: TextStyle(
             fontSize: 16, 
             height: 1.6,
@@ -137,8 +137,8 @@ class AboutScreen extends StatelessWidget {
           const SizedBox(width: 20),
           Expanded(
             child: Text(
-              'Offrir un service restaurant et hôtelier authentique, respectueux des traditions locales et des besoins modernes. ' 
-              'Créer un lieu où les clients se sentent chez eux, que ce soit pour un dîner romantique, un événement de groupe ou une pause gourmande.',
+              'Offrir un service de location d \'espace et hôtelier authentique, respectueux des traditions locales et des besoins modernes. ' 
+              'Créer un lieu où les clients se sentent chez eux, que ce soit pour un dîner romantique, un événement de groupe ou un mariage.',
               style: TextStyle(
                 fontSize: 16, 
                 height: 1.6,
@@ -160,8 +160,8 @@ class AboutScreen extends StatelessWidget {
         _valueItem(
           theme: theme,
           title: 'Qualité', 
-          description: 'Des produits frais sélectionnés avec soin et une cuisine maison.',
-          icon: Icons.restaurant_menu_rounded,
+          description: 'Des décorations sélectionnés avec soin et une cuisine maison.',
+          icon: Icons.menu_rounded,
           color: theme.colorScheme.error,
         ),
         const SizedBox(height: 16),
@@ -176,7 +176,7 @@ class AboutScreen extends StatelessWidget {
         _valueItem(
           theme: theme,
           title: 'Convivialité', 
-          description: 'Un cadre confortable pour partager un bon repas en famille ou entre amis.',
+          description: 'Un cadre confortable pour passer des moments inoubliables.',
           icon: Icons.groups_rounded,
           color: theme.colorScheme.tertiary,
         ),

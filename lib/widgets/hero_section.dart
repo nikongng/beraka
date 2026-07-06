@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import 'package:beraka_hotel_restaurant/responsive/responsive.dart';
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
+import 'package:beraca/responsive/responsive.dart';
+import 'package:beraca/theme/app_theme.dart';
 import 'primary_button.dart';
 
 class HeroSection extends StatelessWidget {

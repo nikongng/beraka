@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
+import 'package:beraca/theme/app_theme.dart';
 
 class PrimaryButton extends StatefulWidget {
   final String text;

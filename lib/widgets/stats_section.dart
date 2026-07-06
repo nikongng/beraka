@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:beraka_hotel_restaurant/responsive/responsive.dart';
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
-import 'package:beraka_hotel_restaurant/widgets/section_title.dart';
+import 'package:beraca/responsive/responsive.dart';
+import 'package:beraca/theme/app_theme.dart';
+import 'package:beraca/widgets/section_title.dart';
 
 class StatsSection extends StatelessWidget {
   const StatsSection({super.key});
@@ -10,7 +10,7 @@ class StatsSection extends StatelessWidget {
   static const List<_StatItem> _stats = [
     _StatItem(
       icon: Icons.people_alt_rounded,
-      value: "500+",
+      value: "300+",
       title: "Invités",
       subtitle: "Capacité maximale",
     ),

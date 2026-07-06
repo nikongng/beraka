@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:beraka_hotel_restaurant/widgets/visitor_assistant.dart';
+import 'package:beraca/widgets/visitor_assistant.dart';
 
 void main() {
   test('builds a capacity reply with a cost estimate for a guest count', () {

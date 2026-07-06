@@ -145,7 +145,7 @@ class _VisitorAssistantState extends State<VisitorAssistant> {
   final List<_Message> _messages = [
     _Message(
       isUser: false,
-      text: 'Bonjour ! Je suis là pour vous aider.',
+      text: 'Bonjour je suis beraca\'s assistant! Je suis là pour vous aider.',
     ),
   ];
   

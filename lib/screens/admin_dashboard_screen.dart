@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
+import 'package:beraca/theme/app_theme.dart';
 
 // --- STREAMS & EFFECT REQUIS POUR LE LOOK PREMIUM ---
 

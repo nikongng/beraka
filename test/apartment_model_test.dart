@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:beraka_hotel_restaurant/models.dart';
+import 'package:beraca/models.dart';
 
 void main() {
   test('creates an apartment from a map with a display price', () {

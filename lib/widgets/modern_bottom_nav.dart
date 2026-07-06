@@ -14,7 +14,7 @@ class ModernBottomNav extends StatelessWidget {
 
   static const _items = [
     {'icon': Icons.home_rounded, 'label': 'Accueil'},
-    {'icon': Icons.restaurant_menu_rounded, 'label': 'Menu'},
+    {'icon': Icons.menu_rounded, 'label': 'Menu'},
     {'icon': Icons.calendar_month_rounded, 'label': 'Je réserve'},
     {'icon': Icons.apartment_rounded, 'label': 'Apparts'},
     {'icon': Icons.support_agent_rounded, 'label': 'Contact'},

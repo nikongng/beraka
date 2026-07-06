@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:beraka_hotel_restaurant/responsive/responsive.dart';
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
-import 'package:beraka_hotel_restaurant/widgets/section_title.dart';
+import 'package:beraca/responsive/responsive.dart';
+import 'package:beraca/theme/app_theme.dart';
+import 'package:beraca/widgets/section_title.dart';
 
 class GallerySection extends StatelessWidget {
   final List<Map<String, String>> items;

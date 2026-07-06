@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'package:beraka_hotel_restaurant/responsive/responsive.dart';
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
+import 'package:beraca/responsive/responsive.dart';
+import 'package:beraca/theme/app_theme.dart';
 
 
 class ModernAppBar extends StatelessWidget implements PreferredSizeWidget {

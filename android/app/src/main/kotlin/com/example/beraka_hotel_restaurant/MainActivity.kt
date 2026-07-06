@@ -1,4 +1,4 @@
-package com.example.beraka_hotel_restaurant
+package com.example.beraca
 
 import io.flutter.embedding.android.FlutterActivity
 

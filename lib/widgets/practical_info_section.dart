@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:beraka_hotel_restaurant/models.dart';
-import 'package:beraka_hotel_restaurant/responsive/responsive.dart';
-import 'package:beraka_hotel_restaurant/theme/app_theme.dart';
-import 'package:beraka_hotel_restaurant/widgets/section_title.dart';
+import 'package:beraca/models.dart';
+import 'package:beraca/responsive/responsive.dart';
+import 'package:beraca/theme/app_theme.dart';
+import 'package:beraca/widgets/section_title.dart';
 
 class PracticalInfoSection extends StatelessWidget {
   const PracticalInfoSection({
@@ -24,17 +24,17 @@ class PracticalInfoSection extends StatelessWidget {
     _PracticalInfo(
       icon: Icons.schedule_rounded,
       label: "Horaires",
-      value: "10h00 - 23h00 tous les jours",
+      value: "7h00 - 17h00 Lundi a vendredi, 8h00 - 12h00 Samedi",
     ),
     _PracticalInfo(
       icon: Icons.phone_rounded,
       label: "Téléphone",
-      value: "+243 999 999 999",
+      value: "+243 998 833 016",
     ),
     _PracticalInfo(
       icon: Icons.email_rounded,
       label: "Email",
-      value: "contact@beraka.com",
+      value: "beracas@gmail.com.com",
     ),
   ];
 
