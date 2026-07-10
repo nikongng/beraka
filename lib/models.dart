@@ -57,6 +57,7 @@ class Dish {
     return {
       'id': id,
       'name': name,
+      'title': name,
       'category': category,
       'description': description,
       'price': price,

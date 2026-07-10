@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'date_picker_field.dart';
 import 'guest_counter.dart';
@@ -118,9 +119,7 @@ class _ContactFormState extends State<ContactForm> {
       if (widget.onSubmit != null) {
         await widget.onSubmit!(request);
       } else {
-        await Future.delayed(
-          const Duration(seconds: 2),
-        );
+        await _sendEmail(request);
       }
 
       if (!mounted) return;
@@ -214,6 +213,34 @@ class _ContactFormState extends State<ContactForm> {
         );
       },
     );
+  }
+
+  Future<void> _sendEmail(ContactRequest request) async {
+    final email = 'beracasvalley@gmail.com';
+    final subject = 'Demande de contact - Beraca\'s Valley';
+    final body = '''Nom : ${request.fullName}
+Téléphone : ${request.phone}
+Email : ${request.email}
+Service : ${request.service}
+Date souhaitée : ${request.eventDate}
+Nombre de personnes : ${request.guests}
+
+Message :
+${request.message}
+''';
+
+    final uri = Uri(
+      scheme: 'mailto',
+      path: email,
+      queryParameters: {
+        'subject': subject,
+        'body': body,
+      },
+    );
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw 'Impossible d’ouvrir le client mail.';
+    }
   }
 
   @override

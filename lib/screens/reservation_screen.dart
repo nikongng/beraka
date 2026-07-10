@@ -60,6 +60,7 @@ class _ReservationScreenState extends State<ReservationScreen>
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
+  late final TextEditingController _peopleController;
 
   bool _isSubmitting = false;
 
@@ -81,6 +82,7 @@ class _ReservationScreenState extends State<ReservationScreen>
       duration: const Duration(milliseconds: 800),
     );
     _entranceController.forward(); // Lance l'animation au démarrage
+    _peopleController = TextEditingController(text: _people.toString());
     // Prefill menu pack and event type if provided
     if (widget.initialMenuPack != null) {
       _menuPack = widget.initialMenuPack;
@@ -98,6 +100,7 @@ class _ReservationScreenState extends State<ReservationScreen>
     _phoneController.dispose();
     _emailController.dispose();
     _commentController.dispose();
+    _peopleController.dispose();
     super.dispose();
   }
 
@@ -125,6 +128,7 @@ class _ReservationScreenState extends State<ReservationScreen>
     HapticFeedback.selectionClick();
     final date = await showDatePicker(
       context: context,
+      locale: const Locale('fr', 'FR'),
       initialDate: DateTime.now().add(const Duration(days: 1)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
@@ -206,6 +210,22 @@ class _ReservationScreenState extends State<ReservationScreen>
 
     HapticFeedback.mediumImpact();
 
+    final peopleCount = int.tryParse(_peopleController.text.trim()) ?? 0;
+    if (peopleCount <= 0) {
+      HapticFeedback.heavyImpact();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+              'Veuillez saisir un nombre d\'invités valide.'),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+      );
+      return;
+    }
+
     final noteParts = <String>[];
     noteParts.add('Type d\'événement : ${_eventType!}');
     noteParts.add('Menu souhaité : ${_menuPack!}');
@@ -220,7 +240,7 @@ class _ReservationScreenState extends State<ReservationScreen>
       email: _emailController.text,
       date: _selectedDate!,
       time: _selectedTime!,
-      guests: _people,
+      guests: peopleCount,
       eventType: _eventType ?? '',
       menuPack: _menuPack ?? '',
       note: noteParts.join('\n'),
@@ -258,6 +278,7 @@ class _ReservationScreenState extends State<ReservationScreen>
       _selectedDate = null;
       _selectedTime = null;
       _people = 4;
+      _peopleController.text = _people.toString();
     });
 
     _nameController.clear();
@@ -365,7 +386,7 @@ class _ReservationScreenState extends State<ReservationScreen>
                               onTap: _pickTime,
                             ),
                             _buildDivider(),
-                            _buildStepperTile(),
+                            _buildPeopleField(),
                             _buildDivider(),
                             _buildDropdownField(
                               label: 'Type d\'événement',
@@ -594,7 +615,7 @@ class _ReservationScreenState extends State<ReservationScreen>
     );
   }
 
-  Widget _buildStepperTile() {
+  Widget _buildPeopleField() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
@@ -615,62 +636,38 @@ class _ReservationScreenState extends State<ReservationScreen>
                 fontSize: 17, color: Colors.black, fontWeight: FontWeight.w400),
           ),
           const Spacer(),
-          Container(
-            decoration: BoxDecoration(
-              color: _iosBackgroundColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                _buildStepperButton(
-                    icon: Icons.remove,
-                    onTap: () {
-                      if (_people > 1) {
-                        HapticFeedback.lightImpact();
-                        setState(() => _people--);
-                      }
-                    }),
-                SizedBox(
-                  width: 32,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    transitionBuilder: (child, animation) {
-                      return ScaleTransition(scale: animation, child: child);
-                    },
-                    child: Text(
-                      '$_people',
-                      key: ValueKey<int>(_people),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 17, fontWeight: FontWeight.w600),
-                    ),
-                  ),
+          SizedBox(
+            width: 120,
+            child: TextField(
+              controller: _peopleController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
-                _buildStepperButton(
-                    icon: Icons.add,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      setState(() => _people++);
-                    }),
-              ],
+                filled: true,
+                fillColor: _iosBackgroundColor,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                hintText: 'Nombre',
+                hintStyle: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 15,
+                ),
+              ),
+              onChanged: (value) {
+                final parsed = int.tryParse(value);
+                if (parsed != null && parsed > 0) {
+                  setState(() => _people = parsed);
+                }
+              },
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildStepperButton(
-      {required IconData icon, required VoidCallback onTap}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Icon(icon, size: 20, color: Colors.black87),
-        ),
       ),
     );
   }

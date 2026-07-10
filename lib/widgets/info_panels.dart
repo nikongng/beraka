@@ -144,7 +144,7 @@ class InfoPanels extends StatelessWidget {
                         const SizedBox(height: 8),
                         _buildBullet('5. Un délai butoir unique d\'un mois avant la manifestation vous est accordé un changement des dates'),
                         const SizedBox(height: 8),
-                        _buildBullet('6. une caution remboursable est exigée a 300 USD nous garantissant en cas perte ou casses'),
+                        _buildBullet('6. une caution remboursable est exigée a 200 USD nous garantissant en cas perte ou casses'),
                       ],
                     ),
                   ],

@@ -538,6 +538,18 @@ class SupabaseService {
   static Future<Dish> addMenuItem(Dish dish) async {
     try {
       final result = await supabase
+          .from('menu_packs')
+          .insert(dish.toMap())
+          .select()
+          .single()
+          .execute();
+      return Dish.fromMap(result.data as Map<String, dynamic>);
+    } on PostgrestException {
+      // Fallback to legacy menu table if menu_packs is unavailable.
+    }
+
+    try {
+      final result = await supabase
           .from('menu')
           .insert(dish.toMap())
           .select()
@@ -550,6 +562,19 @@ class SupabaseService {
   }
 
   static Future<Dish> updateMenuItem(Dish dish) async {
+    try {
+      final result = await supabase
+          .from('menu_packs')
+          .update(dish.toMap())
+          .eq('id', dish.id)
+          .select()
+          .single()
+          .execute();
+      return Dish.fromMap(result.data as Map<String, dynamic>);
+    } on PostgrestException {
+      // Fallback to legacy menu table if updating menu_packs fails.
+    }
+
     try {
       final result = await supabase
           .from('menu')
@@ -565,6 +590,16 @@ class SupabaseService {
   }
 
   static Future<void> removeMenuItem(String dishId) async {
+    try {
+      final result = await supabase.from('menu_packs').delete().eq('id', dishId).execute();
+      final deleted = result.data;
+      if (deleted != null && (deleted is List ? deleted.isNotEmpty : true)) {
+        return;
+      }
+    } on PostgrestException {
+      // Fallback to legacy menu table if deleting from menu_packs fails.
+    }
+
     try {
       await supabase.from('menu').delete().eq('id', dishId).execute();
     } on PostgrestException catch (error) {
