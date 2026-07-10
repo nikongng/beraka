@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'date_picker_field.dart';
-import 'guest_counter.dart';
 import 'modern_text_field.dart';
 import 'send_button.dart';
 import 'service_dropdown.dart';
@@ -26,22 +25,21 @@ class _ContactFormState extends State<ContactForm> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _dateController = TextEditingController();
+  final _guestsController = TextEditingController(text: '100'); // Remplacement du int _guests
   final _messageController = TextEditingController();
+  
   final List<String> _services = [
-  "Location d'espace",
-  "Décoration",
-  "Service traiteur",
-  "Mariage",
-  "Anniversaire",
-  "Conférence",
-  "Séminaire",
-  "Autre",
-   ];
+    "Location d'espace",
+    "Décoration",
+    "Service traiteur",
+    "Mariage",
+    "Anniversaire",
+    "Conférence",
+    "Séminaire",
+    "Autre",
+  ];
 
   String? _selectedService;
-
-  int _guests = 100;
-
   bool _isLoading = false;
 
   @override
@@ -50,6 +48,7 @@ class _ContactFormState extends State<ContactForm> {
     _phoneController.dispose();
     _emailController.dispose();
     _dateController.dispose();
+    _guestsController.dispose();
     _messageController.dispose();
     super.dispose();
   }
@@ -89,6 +88,17 @@ class _ContactFormState extends State<ContactForm> {
     return null;
   }
 
+  // Nouvelle validation pour s'assurer que l'entrée est bien un nombre
+  String? _validateGuests(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Veuillez indiquer le nombre d'invités";
+    }
+    if (int.tryParse(value.trim()) == null) {
+      return "Veuillez entrer un nombre valide";
+    }
+    return null;
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -111,7 +121,7 @@ class _ContactFormState extends State<ContactForm> {
       email: _emailController.text.trim(),
       service: _selectedService!, 
       eventDate: _dateController.text.trim(),
-      guests: _guests,
+      guests: int.tryParse(_guestsController.text.trim()) ?? 100, // Conversion du texte en entier
       message: _messageController.text.trim(),
     );
 
@@ -149,11 +159,11 @@ class _ContactFormState extends State<ContactForm> {
     _phoneController.clear();
     _emailController.clear();
     _dateController.clear();
+    _guestsController.text = '100'; // Réinitialisation de la valeur
     _messageController.clear();
 
     setState(() {
       _selectedService = null;
-      _guests = 100;
     });
   }
 
@@ -405,13 +415,13 @@ ${request.message}
                   ),
                   const SizedBox(width: 20),
                   Expanded(
-                    child: GuestCounter(
-                      value: _guests,
-                      onChanged: (value) {
-                        setState(() {
-                          _guests = value;
-                        });
-                      },
+                    child: ModernTextField(
+                      controller: _guestsController,
+                      label: "Nombre d'invités",
+                      hint: "Ex: 100",
+                      icon: Icons.people_outline,
+                      keyboardType: TextInputType.number,
+                      validator: _validateGuests,
                     ),
                   ),
                 ],
@@ -421,13 +431,13 @@ ${request.message}
                 controller: _dateController,
               ),
               const SizedBox(height: 18),
-              GuestCounter(
-                value: _guests,
-                onChanged: (value) {
-                  setState(() {
-                    _guests = value;
-                  });
-                },
+              ModernTextField(
+                controller: _guestsController,
+                label: "Nombre d'invités",
+                hint: "Ex: 100",
+                icon: Icons.people_outline,
+                keyboardType: TextInputType.number,
+                validator: _validateGuests,
               ),
             ],
 

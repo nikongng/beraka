@@ -42,12 +42,40 @@ Future<void> initSupabase() async {
 
 SupabaseClient get supabase => Supabase.instance.client;
 
-const List<String> _adminEmails = ['admin@beraca.com'];
 const String _galleryBucket = 'gallery';
 
+List<String> _configuredAdminEmails() {
+  const raw = String.fromEnvironment(
+    'ADMIN_EMAILS',
+    defaultValue: 'admin@beraca.com,beracasvalley@gmail.com',
+  );
+
+  return raw
+      .split(',')
+      .map((email) => email.trim().toLowerCase())
+      .where((email) => email.isNotEmpty)
+      .toSet()
+      .toList();
+}
+
 bool currentUserIsAdmin() {
-  final email = supabase.auth.currentUser?.email?.toLowerCase();
-  return email != null && _adminEmails.contains(email);
+  final user = supabase.auth.currentUser;
+  if (user == null) return false;
+
+  final configuredEmails = _configuredAdminEmails();
+  final email = user.email?.toLowerCase();
+  final metadataEmail = user.userMetadata?['email']?.toString().toLowerCase();
+  final metadataRole = user.userMetadata?['role']?.toString().toLowerCase();
+  final appMetadataRole = user.appMetadata['role']?.toString().toLowerCase();
+  final isAdminFlag = user.userMetadata?['is_admin'] ?? user.appMetadata['is_admin'];
+
+  if (email != null && configuredEmails.contains(email)) return true;
+  if (metadataEmail != null && configuredEmails.contains(metadataEmail)) return true;
+  if (metadataRole != null && ['admin', 'superadmin', 'administrator', 'owner'].contains(metadataRole)) return true;
+  if (appMetadataRole != null && ['admin', 'superadmin', 'administrator', 'owner'].contains(appMetadataRole)) return true;
+  if (isAdminFlag is bool && isAdminFlag) return true;
+
+  return false;
 }
 
 Future<bool> signInWithEmail(String email, String password) async {
