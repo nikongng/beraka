@@ -36,19 +36,19 @@ class GeminiService {
   }) {
     final historyBlock = conversationHistory.isEmpty
         ? 'Historique : aucun.'
-        : 'Historique de conversation :\n' + conversationHistory.join('\n');
+        : 'Historique de conversation :\n${conversationHistory.join('\n')}';
 
     return '''
-Tu es l’assistant expert de Beraka’s Valley pour l’organisation d’événements.
+Tu es l’assistant expert de Beraca’s Valley pour l’organisation d’événements.
 Réponds en français, avec un ton chaleureux, professionnel et direct.
 Commence par une salutation seulement si c’est la première réponse de l’assistant dans cette conversation.
 Si l’historique contient déjà un message de l’assistant ou s’il y a eu une salutation précédente, réponds directement sans nouvelle salutation.
 Analyse la demande du client en identifiant le type d’événement, la date, le nombre d’invités et le besoin principal.
-Donne une réponse structurée : 1) ce que propose Beraka’s Valley, 2) les packs pertinents, 3) les tarifs estimés ou forfaits, 4) les actions suivantes.
+Donne une réponse structurée : 1) ce que propose Beraca’s Valley, 2) les packs pertinents, 3) les tarifs estimés ou forfaits, 4) les actions suivantes.
 Pour les questions de prix, fournis des montants clairs ou une fourchette et indique s’il s’agit d’une estimation.
 Pour les demandes d’anniversaire, mariage, réunion ou conférence, recommande le pack le plus adapté et mentionne les tarifs exacts du contexte.
 Ne fabrique pas d’information et n’ajoute pas de détails qui ne sont pas présents dans le contexte.
-Si le client demande “qui es-tu ?” ou une variante similaire, réponds clairement : “Je suis l’assistant de Beraka’s Valley spécialisé dans l’organisation d’événements.”
+Si le client demande “qui es-tu ?” ou une variante similaire, réponds clairement : “Je suis l’assistant de Beraca’s Valley spécialisé dans l’organisation d’événements.”
 Si le client n’a pas donné assez de détails, pose une question de clarification précise et utile.
 Ne dis pas que tu es une IA.
 Ne recommande pas de cliquer sur un bouton de l’application sauf si le client demande explicitement comment faire une réservation.
@@ -159,7 +159,7 @@ Dernière demande du client : $request
     final trimmed = text.substring(0, maxLength).trimRight();
     final lastPeriod = trimmed.lastIndexOf('.');
     if (lastPeriod > 1000) {
-      return '${trimmed.substring(0, lastPeriod + 1)}';
+      return trimmed.substring(0, lastPeriod + 1);
     }
     return trimmed;
   }
@@ -173,12 +173,12 @@ Dernière demande du client : $request
     final asksAvailability = lowered.contains('dispo') || lowered.contains('disponible') || lowered.contains('date') || lowered.contains('libre') || lowered.contains('ouvert');
 
     if (asksWho) {
-      return 'Je suis l’assistant de Beraka’s Valley spécialisé dans l’organisation d’événements. Je peux vous aider pour les tarifs, les packs et la préparation d’un événement.';
+      return 'Je suis l’assistant de Beraca’s Valley spécialisé dans l’organisation d’événements. Je peux vous aider pour les tarifs, les packs et la préparation d’un événement.';
     }
 
     if (asksPrice && mentionsEvent) {
       final guestCount = _extractGuestCount(request);
-      final basePackEstimate = 2500.0;
+      const basePackEstimate = 2500.0;
       final perGuestEstimate = guestCount != null ? guestCount * 15.0 : 0.0;
 
       if (guestCount == null) {
@@ -239,7 +239,7 @@ Dernière demande du client : $request
     }
 
     if (lowered.contains('qui es-tu') || lowered.contains('qui est tu') || lowered.contains('qui êtes-vous') || lowered.contains('qui etes vous')) {
-      return 'Je suis l’assistant de Beraka’s Valley spécialisé dans l’organisation d’événements. Le service est actuellement en mode de secours car $cause. Pour une aide précise, donnez votre type d’événement, la date et le nombre d’invités.';
+      return 'Je suis l’assistant de Beraca’s Valley spécialisé dans l’organisation d’événements. Le service est actuellement en mode de secours car $cause. Pour une aide précise, donnez votre type d’événement, la date et le nombre d’invités.';
     }
 
     return 'Je peux vous aider à organiser votre événement. Le service est actuellement en mode de secours car $cause. Indiquez votre besoin (anniversaire, mariage, conférence, date, nombre d’invités) pour que je vous donne une réponse plus précise.';

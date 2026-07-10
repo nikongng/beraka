@@ -197,9 +197,9 @@ class _CalendarPanelState extends State<CalendarPanel> {
         const SizedBox(height: 8),
 
         // Weekday labels
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             _WeekdayLabel('Lun'),
             _WeekdayLabel('Mar'),
             _WeekdayLabel('Mer'),

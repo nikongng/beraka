@@ -40,9 +40,9 @@ class RentalTermsSection extends StatelessWidget {
           bottom: Responsive.sectionSpacing(context),
         ),
         child: desktop
-            ? Row(
+            ? const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Expanded(
                     child: _TermsPanel(
                       icon: Icons.verified_rounded,
@@ -64,8 +64,8 @@ class RentalTermsSection extends StatelessWidget {
                   ),
                 ],
               )
-            : Column(
-                children: const [
+            : const Column(
+                children: [
                   _TermsPanel(
                     icon: Icons.verified_rounded,
                     title: "Services inclus offerts",

@@ -83,7 +83,7 @@ class HeroSection extends StatelessWidget {
         ).fade().moveX(begin: -40),
         const SizedBox(height: 20),
         Animate(
-          child: Text(
+          child: const Text(
             "L'excellence pour vos événements.",
             style: TextStyle(
               color: Colors.white,
@@ -95,7 +95,7 @@ class HeroSection extends StatelessWidget {
         ).fade(delay: const Duration(milliseconds: 200)).moveY(begin: 30),
         const SizedBox(height: 25),
         Animate(
-          child: Text(
+          child: const Text(
             "decouvrez BERACA'S VALLEY, la salle de reception prestigieuse concu pour sublimer vos moments innoubliables. Mariages, conférences, anniversaires.",
             style: TextStyle(
               color: Colors.white,

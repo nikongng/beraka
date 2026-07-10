@@ -19,7 +19,7 @@ void main() {
   });
 
   test('creates an apartment from a map with multiple image urls', () {
-    final jsonArray = '["https://example.com/apt1.jpg", "https://example.com/apt2.jpg"]';
+    const jsonArray = '["https://example.com/apt1.jpg", "https://example.com/apt2.jpg"]';
     final apartment = Apartment.fromMap({
       'id': 'apt-2',
       'title': 'Appartement Premium',

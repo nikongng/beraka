@@ -537,7 +537,7 @@ class _AdminScreenState extends State<AdminScreen> {
                                       child: Container(
                                         width: 24,
                                         height: 24,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           color: Colors.black54,
                                           shape: BoxShape.circle,
                                         ),
@@ -1139,7 +1139,7 @@ class _AdminScreenState extends State<AdminScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Assistant IA Beraka',
+                'Assistant IA Beraca',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 8),
@@ -1154,7 +1154,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 onGenerate: () async {
                   final reservation = _reservations.isNotEmpty ? _reservations.first : null;
                   final contextText = reservation == null
-                      ? 'Le client a demandé une réservation au restaurant Beraka’s Valley.'
+                      ? 'Le client a demandé une réservation au restaurant Beraca’s Valley.'
                       : 'Réservation du client ${reservation.guestName} pour ${reservation.date.day}/${reservation.date.month}/${reservation.date.year} à ${reservation.time.format(context)} pour ${reservation.guests} personnes.';
                   return GeminiService.generateReply(
                     context: contextText,
@@ -1164,12 +1164,12 @@ class _AdminScreenState extends State<AdminScreen> {
               ),
               const SizedBox(height: 12),
               _assistantActionCard(
-                title: 'Présentation de Beraka’s Valley',
+                title: 'Présentation de Beraca’s Valley',
                 subtitle: 'Génère une proposition élégante pour présenter le lieu à un client.',
                 onGenerate: () async {
                   return GeminiService.generateReply(
-                    context: 'Beraka’s Valley est un restaurant et hôtel de charme, avec une ambiance chaleureuse, une cuisine raffinée et un cadre idéal pour les repas, les événements et les séjours.',
-                    request: 'Rédige une réponse convaincante et naturelle pour présenter Beraka’s Valley à un client potentiel.',
+                    context: 'Beraca’s Valley est une salle de reception de charme, avec une ambiance chaleureuse, une cuisine raffinée et un cadre idéal pour les repas, les événements et les séjours.',
+                    request: 'Rédige une réponse convaincante et naturelle pour présenter Beraca’s Valley à un client potentiel.',
                   );
                 },
               ),
@@ -1231,7 +1231,7 @@ class _AdminScreenState extends State<AdminScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Beraka'),
+        title: const Text('Admin Beraca'),
         actions: [
           if (_isAdmin)
             IconButton(

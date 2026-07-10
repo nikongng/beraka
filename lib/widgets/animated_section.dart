@@ -30,8 +30,8 @@ class AnimatedSection extends StatelessWidget {
     }
 
     final animation = Animate(
-      child: child,
       delay: Duration(milliseconds: delay),
+      child: child,
     ).fade(
       duration: duration,
       curve: Curves.easeOut,

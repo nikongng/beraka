@@ -42,7 +42,7 @@ Future<void> initSupabase() async {
 
 SupabaseClient get supabase => Supabase.instance.client;
 
-const List<String> _adminEmails = ['admin@beraka.com'];
+const List<String> _adminEmails = ['admin@beraca.com'];
 const String _galleryBucket = 'gallery';
 
 bool currentUserIsAdmin() {

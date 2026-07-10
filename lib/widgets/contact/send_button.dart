@@ -38,10 +38,10 @@ class SendButton extends StatelessWidget {
           switchInCurve: Curves.easeOut,
           switchOutCurve: Curves.easeIn,
           child: isLoading
-              ? Row(
-                  key: const ValueKey("loading"),
+              ? const Row(
+                  key: ValueKey("loading"),
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     SizedBox(
                       width: 22,
                       height: 22,

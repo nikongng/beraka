@@ -101,10 +101,10 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CalendarPanel(reservations: widget.reservations),
           ),
         ),
-        SliverToBoxAdapter(
+        const SliverToBoxAdapter(
           child: AnimatedSection(
             delay: 120,
-            child: const InfoPanels(),
+            child: InfoPanels(),
           ),
         ),
         SliverToBoxAdapter(

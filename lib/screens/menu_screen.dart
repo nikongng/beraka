@@ -192,7 +192,7 @@ class _MenuScreenState extends State<MenuScreen> {
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: _isLoading
-                  ? SliverToBoxAdapter(
+                  ? const SliverToBoxAdapter(
                       child: SizedBox(
                         height: 240,
                         child: Center(child: CircularProgressIndicator(color: AppTheme.primary)),
@@ -257,7 +257,7 @@ class _PackageDialogContent extends StatelessWidget {
               ),
               child: Text(
                 menuItem.category.isEmpty ? 'Menu' : menuItem.category,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.secondary,
                   fontWeight: FontWeight.w800,
                 ),
@@ -379,7 +379,7 @@ class _PackageCardState extends State<_PackageCard> {
   @override
   Widget build(BuildContext context) {
     final package = widget.package;
-    final accent = AppTheme.primary;
+    const accent = AppTheme.primary;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _hover = true),

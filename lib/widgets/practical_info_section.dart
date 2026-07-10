@@ -420,8 +420,8 @@ class _AvailabilityCalendarState extends State<_AvailabilityCalendar> {
             ),
           ),
           const SizedBox(height: 18),
-          Row(
-            children: const [
+          const Row(
+            children: [
               _WeekdayLabel("L"),
               _WeekdayLabel("M"),
               _WeekdayLabel("M"),

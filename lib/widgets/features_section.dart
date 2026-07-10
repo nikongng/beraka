@@ -10,7 +10,7 @@ class FeaturesSection extends StatelessWidget {
   static const List<_Feature> _features = [
     _Feature(
       Icons.people_alt_rounded,
-      "500 invités",
+      "300 invités",
       "Grande capacité pour mariages, conférences et événements.",
     ),
     _Feature(

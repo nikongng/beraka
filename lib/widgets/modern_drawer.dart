@@ -38,9 +38,9 @@ class ModernDrawer extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppTheme.primary,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
                 ),
@@ -76,7 +76,7 @@ class ModernDrawer extends StatelessWidget {
                   const SizedBox(height: 4),
 
                   const Text(
-                    "Hôtel • Restaurant",
+                    "Salle de reception prestigieuse",
                     style: TextStyle(
                       color: Colors.white70,
                       fontSize: 15,
@@ -131,22 +131,22 @@ class ModernDrawer extends StatelessWidget {
 
             const Divider(),
 
-            ListTile(
-              leading: const Icon(
+            const ListTile(
+              leading: Icon(
                 Icons.phone_rounded,
                 color: AppTheme.primary,
               ),
-              title: const Text("+243 998 833 016"),
-              subtitle: const Text("Réception"),
+              title: Text("+243 998 833 016"),
+              subtitle: Text("Réception"),
             ),
 
-            ListTile(
-              leading: const Icon(
+            const ListTile(
+              leading: Icon(
                 Icons.location_on_rounded,
                 color: AppTheme.primary,
               ),
-              title: const Text("Lubumbashi"),
-              subtitle: const Text("RDC"),
+              title: Text("Lubumbashi"),
+              subtitle: Text("RDC"),
             ),
 
             const SizedBox(height: 10),

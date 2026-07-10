@@ -1,6 +1,6 @@
-# Beraka Hôtel Restaurant (Flutter)
+# Beraca's valley (Flutter)
 
-Application Flutter cross-platform pour la gestion d'un hôtel restaurant.
+Application Flutter cross-platform pour la gestion d'une salle de reception.
 
 ## Lancement
 

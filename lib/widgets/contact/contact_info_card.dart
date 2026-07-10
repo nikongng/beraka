@@ -111,7 +111,7 @@ class _ContactInfoCardState extends State<ContactInfoCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    Future<void> _defaultPrimaryAction() async {
+    Future<void> defaultPrimaryAction() async {
       late final Uri uri;
       switch (widget.type) {
         case ContactType.phone:
@@ -133,7 +133,7 @@ class _ContactInfoCardState extends State<ContactInfoCard> {
       }
     }
 
-    Future<void> _defaultSecondaryAction() async {
+    Future<void> defaultSecondaryAction() async {
       switch (widget.type) {
         case ContactType.phone:
           final uri = Uri.parse(
@@ -270,7 +270,7 @@ class _ContactInfoCardState extends State<ContactInfoCard> {
                   Expanded(
                     child: FilledButton.icon(
                       onPressed:
-                          widget.onPrimaryAction ?? _defaultPrimaryAction,
+                          widget.onPrimaryAction ?? defaultPrimaryAction,
                       icon: Icon(_primaryIcon),
                       label: Text(_primaryButtonText),
                       style: FilledButton.styleFrom(
@@ -287,7 +287,7 @@ class _ContactInfoCardState extends State<ContactInfoCard> {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed:
-                          widget.onSecondaryAction ?? _defaultSecondaryAction,
+                          widget.onSecondaryAction ?? defaultSecondaryAction,
                       icon: Icon(_secondaryIcon),
                       label: Text(_secondaryButtonText),
                       style: OutlinedButton.styleFrom(

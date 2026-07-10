@@ -143,7 +143,7 @@ class _VisitorAssistantState extends State<VisitorAssistant> {
   final stt.SpeechToText _speech = stt.SpeechToText();
   
   final List<_Message> _messages = [
-    _Message(
+    const _Message(
       isUser: false,
       text: 'Bonjour je suis beraca\'s assistant! Je suis là pour vous aider.',
     ),
@@ -192,8 +192,8 @@ Espace extérieur :
   // Prix par invité pour le modèle "au couvert" (estimation)
   static const double _perGuestBasePrice = 15.0; // en $ par personne
 
-  static const String _companyName = 'Beraka’s Valley';
-  static const String _companyDescription = 'Beraka’s Valley est un restaurant et hôtel de charme, offrant une cuisine raffinée, des espaces de réception élégants et un service attentionné pour mariages, conférences et événements privés.';
+  static const String _companyName = 'Beraca’s Valley';
+  static const String _companyDescription = 'Beraca’s Valley est une salle de reception de charme, offrant une cuisine raffinée, des espaces de réception élégants et un service attentionné pour mariages, conférences et événements privés.';
   static const String _contactPhone = '+243 998 833 016';
   static const String _contactEmail = 'beracasvalley@gmail.com';
   static const String _contactAddress = '01, Av. Géomètre Ponga, Plateau Karavia, Lubumbashi - RDC';
@@ -341,7 +341,7 @@ Espace extérieur :
     } catch (error) {
       if (!mounted) return;
       setState(() {
-        _messages.add(_Message(isUser: false, text: 'Je suis désolé, une erreur technique est survenue.'));
+        _messages.add(const _Message(isUser: false, text: 'Je suis désolé, une erreur technique est survenue.'));
       });
     } finally {
       if (mounted) {
@@ -455,7 +455,7 @@ $availabilityHint
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Assistant Beraka', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    Text('Assistant Beraca', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
                     Row(
                       children: [
                         Container(width: 8, height: 8, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle)),
