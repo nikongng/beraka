@@ -29,6 +29,26 @@ class _AdminScreenState extends State<AdminScreen> {
   bool get _isServiceTraiteur => _menuCategoryId == 'Services traiteurs';
   bool get _isShortMenuCategory => _isServiceTraiteur || _menuCategoryId == 'Cocktail';
   final TextEditingController _menuIncludesController = TextEditingController();
+
+  final TextEditingController _adminReservationNameController = TextEditingController();
+  final TextEditingController _adminReservationPhoneController = TextEditingController();
+  final TextEditingController _adminReservationEmailController = TextEditingController();
+  final TextEditingController _adminReservationGuestsController = TextEditingController(text: '4');
+  final TextEditingController _adminReservationNoteController = TextEditingController();
+  final List<String> _adminReservationEventTypes = [
+    'Mariage',
+    'Anniversaire',
+    'Réunion',
+    'Conférence',
+    'Cérémonie',
+    'Cocktail',
+    'Autre',
+  ];
+  String? _adminSelectedEventType = 'Mariage';
+  String? _adminSelectedMenuPack;
+  DateTime? _adminSelectedDate;
+  TimeOfDay? _adminSelectedTime;
+
   final TextEditingController _apartmentTitleController = TextEditingController();
   bool _menuPremium = false;
   final TextEditingController _apartmentDescriptionController = TextEditingController();
@@ -240,6 +260,96 @@ class _AdminScreenState extends State<AdminScreen> {
                 'Confirmées', confirmed.toString(), Icons.check_circle),
           ],
         ),
+        const SizedBox(height: 20),
+        Text('Créer une réservation admin',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _adminReservationNameController,
+          decoration:
+              const InputDecoration(labelText: 'Nom du client'),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _adminReservationPhoneController,
+          keyboardType: TextInputType.phone,
+          decoration:
+              const InputDecoration(labelText: 'Téléphone'),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _adminReservationEmailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration:
+              const InputDecoration(labelText: 'Email (facultatif)'),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _adminSelectedEventType,
+                decoration: const InputDecoration(labelText: 'Type d’événement'),
+                items: _adminReservationEventTypes
+                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                    .toList(),
+                onChanged: (value) => setState(() => _adminSelectedEventType = value),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _adminSelectedMenuPack,
+                decoration: const InputDecoration(labelText: 'Menu pack'),
+                items: _menuItems
+                    .map((item) => DropdownMenuItem(value: item.name, child: Text(item.name)))
+                    .toList(),
+                onChanged: (value) => setState(() => _adminSelectedMenuPack = value),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _pickAdminReservationDate,
+                child: Text(_adminSelectedDate == null
+                    ? 'Choisir une date'
+                    : '${_adminSelectedDate!.day}/${_adminSelectedDate!.month}/${_adminSelectedDate!.year}'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _pickAdminReservationTime,
+                child: Text(_adminSelectedTime == null
+                    ? 'Choisir une heure'
+                    : _adminSelectedTime!.format(context)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _adminReservationGuestsController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Nombre de personnes'),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _adminReservationNoteController,
+          decoration: const InputDecoration(labelText: 'Notes supplémentaires'),
+          maxLines: 3,
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton(
+          onPressed: _createAdminReservation,
+          child: const Text('Créer la réservation (confirmée)'),
+        ),
+        const SizedBox(height: 20),
+        const Divider(),
         const SizedBox(height: 20),
         Text('Ajouter un album à la galerie',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
@@ -884,6 +994,120 @@ class _AdminScreenState extends State<AdminScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _pickAdminReservationDate() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      locale: const Locale('fr', 'FR'),
+      initialDate: DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Theme.of(context).colorScheme.primary,
+              onPrimary: Colors.white,
+              surface: Theme.of(context).colorScheme.surface,
+              onSurface: Theme.of(context).colorScheme.onSurface,
+            ),
+            dialogTheme: DialogThemeData(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (selectedDate != null) {
+      setState(() => _adminSelectedDate = selectedDate);
+    }
+  }
+
+  Future<void> _pickAdminReservationTime() async {
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: 19, minute: 0),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            timePickerTheme: TimePickerThemeData(
+              dialBackgroundColor: Theme.of(context).colorScheme.surface,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (selectedTime != null) {
+      setState(() => _adminSelectedTime = selectedTime);
+    }
+  }
+
+  Future<void> _createAdminReservation() async {
+    final name = _adminReservationNameController.text.trim();
+    final phone = _adminReservationPhoneController.text.trim();
+    final email = _adminReservationEmailController.text.trim();
+    final guests = int.tryParse(_adminReservationGuestsController.text.trim()) ?? 1;
+    final eventType = _adminSelectedEventType ?? 'Autre';
+    final menuPack = _adminSelectedMenuPack ?? '';
+    final note = _adminReservationNoteController.text.trim();
+
+    if (name.isEmpty || phone.isEmpty || _adminSelectedDate == null || _adminSelectedTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Remplissez le nom, le téléphone, la date et l’heure.')),
+      );
+      return;
+    }
+
+    if (guests <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Indiquez un nombre de personnes valide.')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      final reservation = Reservation(
+        id: '',
+        guestName: name,
+        phone: phone,
+        email: email,
+        date: _adminSelectedDate!,
+        time: _adminSelectedTime!,
+        guests: guests,
+        eventType: eventType,
+        menuPack: menuPack,
+        note: note.isEmpty ? 'Réservation créée par l’admin.' : 'Réservation créée par l’admin.\n$note',
+        status: 'Confirmée',
+      );
+      final createdReservation = await SupabaseService.createReservation(reservation);
+      setState(() {
+        _reservations.insert(0, createdReservation);
+        _adminReservationNameController.clear();
+        _adminReservationPhoneController.clear();
+        _adminReservationEmailController.clear();
+        _adminReservationGuestsController.text = '4';
+        _adminReservationNoteController.clear();
+        _adminSelectedEventType = 'Mariage';
+        _adminSelectedMenuPack = null;
+        _adminSelectedDate = null;
+        _adminSelectedTime = null;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Réservation admin créée et validée automatiquement.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la création de la réservation : $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
