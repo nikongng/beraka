@@ -27,7 +27,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<GalleryPhoto> _galleryPhotos = [];
+  List<GalleryAlbum> _galleryAlbums = [];
   bool _galleryLoading = true;
 
   @override
@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (mounted) {
         setState(() {
-          _galleryPhotos = photos;
+          _galleryAlbums = GalleryAlbum.groupByTitle(photos);
         });
       }
     } catch (_) {
@@ -56,32 +56,46 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  List<Map<String, String>> get galleryItems {
-    if (_galleryPhotos.isEmpty) {
-      return const [
-        {
-          "image": "assets/images/gallery1.jpg",
-          "label": "Salle de réception",
-        },
-        {
-          "image": "assets/images/gallery2.jpg",
-          "label": "Restaurant",
-        },
-        {
-          "image": "assets/images/gallery3.jpg",
-          "label": "Mariage",
-        },
+  List<GalleryAlbum> get galleryItems {
+    if (_galleryAlbums.isEmpty) {
+      return [
+        GalleryAlbum(
+          title: 'Salle de réception',
+          photos: [
+            GalleryPhoto(
+              id: 'fallback_1',
+              label: 'Salle de réception',
+              imageUrl: 'assets/images/gallery1.jpg',
+              createdAt: DateTime.now(),
+            ),
+          ],
+        ),
+        GalleryAlbum(
+          title: 'Restaurant',
+          photos: [
+            GalleryPhoto(
+              id: 'fallback_2',
+              label: 'Restaurant',
+              imageUrl: 'assets/images/gallery2.jpg',
+              createdAt: DateTime.now(),
+            ),
+          ],
+        ),
+        GalleryAlbum(
+          title: 'Mariage',
+          photos: [
+            GalleryPhoto(
+              id: 'fallback_3',
+              label: 'Mariage',
+              imageUrl: 'assets/images/gallery3.jpg',
+              createdAt: DateTime.now(),
+            ),
+          ],
+        ),
       ];
     }
 
-    return _galleryPhotos
-        .map(
-          (photo) => {
-            "image": photo.imageUrl,
-            "label": photo.label,
-          },
-        )
-        .toList();
+    return _galleryAlbums;
   }
 
   @override
@@ -118,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   )
                 : GallerySection(
-                    items: galleryItems,
+                    albums: galleryItems,
                   ),
           ),
         ),

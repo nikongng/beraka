@@ -30,7 +30,7 @@ class _MenuScreenState extends State<MenuScreen> {
       final items = await SupabaseService.fetchMenu();
       setState(() {
         _menuItems = items;
-        _categories = const ['Tous', 'Mariage', 'Autres cérémonies', 'Espace extérieur'];
+        _categories = const ['Tous', 'Mariage', 'Autres cérémonies', 'Espace extérieur', 'Services traiteurs', 'Cocktail'];
         _selectedCategory = _categories.first;
         _isLoading = false;
       });
@@ -429,7 +429,7 @@ class _PackageCardState extends State<_PackageCard> {
                   package.priceText.isNotEmpty
                       ? package.priceText
                       : '${package.price.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ' ')} USD',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: accent),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: accent),
                 ),
                 const SizedBox(height: 6),
                 IconButton(

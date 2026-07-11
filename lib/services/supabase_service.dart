@@ -18,8 +18,8 @@ const _supabaseAnonKey = String.fromEnvironment(
 void _validateSupabaseConfig() {
   if (_supabaseUrl.isEmpty || _supabaseAnonKey.isEmpty) {
     throw StateError(
-      'Supabase configuration is missing. ' 
-      'Run Flutter with --dart-define=SUPABASE_URL=... ' 
+      'Supabase configuration is missing. '
+      'Run Flutter with --dart-define=SUPABASE_URL=... '
       '--dart-define=SUPABASE_ANON_KEY=... or set the values in your environment.',
     );
   }
@@ -102,16 +102,13 @@ User? currentSupabaseUser() {
 class SupabaseService {
   static Future<List<Reservation>> fetchReservations() async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('reservations')
           .select('*')
-          .order('date', ascending: true)
-          .execute();
+          .order('date', ascending: true);
 
-      final data = result.data as List<dynamic>?;
-      return (data ?? [])
-          .cast<Map<String, dynamic>>()
-          .map(Reservation.fromMap)
+      return (data as List<dynamic>)
+          .map((e) => Reservation.fromMap(e as Map<String, dynamic>))
           .toList();
     } on PostgrestException catch (error) {
       throw error.message;
@@ -120,19 +117,13 @@ class SupabaseService {
 
   static Future<Reservation> createReservation(Reservation reservation) async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('reservations')
           .insert(reservation.toMap())
           .select()
-          .single()
-          .execute();
+          .single();
 
-      final data = result.data;
-      if (data == null || data is! Map<String, dynamic>) {
-        throw 'Réponse inattendue du serveur.';
-      }
-
-      return Reservation.fromMap(data);
+      return Reservation.fromMap(data as Map<String, dynamic>);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -140,20 +131,14 @@ class SupabaseService {
 
   static Future<Reservation> updateReservationStatus(String id, String status) async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('reservations')
           .update({'status': status})
           .eq('id', id)
           .select()
-          .single()
-          .execute();
+          .single();
 
-      final data = result.data;
-      if (data == null || data is! Map<String, dynamic>) {
-        throw 'Réponse inattendue du serveur.';
-      }
-
-      return Reservation.fromMap(data);
+      return Reservation.fromMap(data as Map<String, dynamic>);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -161,11 +146,7 @@ class SupabaseService {
 
   static Future<void> cancelReservation(String id) async {
     try {
-      await supabase
-          .from('reservations')
-          .delete()
-          .eq('id', id)
-          .execute();
+      await supabase.from('reservations').delete().eq('id', id);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -173,16 +154,13 @@ class SupabaseService {
 
   static Future<List<GalleryPhoto>> fetchGalleryPhotos() async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('gallery')
           .select('*')
-          .order('created_at', ascending: false)
-          .execute();
+          .order('created_at', ascending: false);
 
-      final data = result.data as List<dynamic>?;
-      return (data ?? [])
-          .cast<Map<String, dynamic>>()
-          .map(GalleryPhoto.fromMap)
+      return (data as List<dynamic>)
+          .map((e) => GalleryPhoto.fromMap(e as Map<String, dynamic>))
           .toList();
     } on PostgrestException catch (error) {
       throw error.message;
@@ -200,7 +178,7 @@ class SupabaseService {
       if (storagePath.isNotEmpty) {
         await supabase.storage.from(_galleryBucket).remove([storagePath]);
       }
-      await supabase.from('gallery').delete().eq('id', photo.id).execute();
+      await supabase.from('gallery').delete().eq('id', photo.id);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -219,16 +197,15 @@ class SupabaseService {
           );
 
       final publicUrl = '$_supabaseUrl/storage/v1/object/public/$_galleryBucket/$filePath';
-      final result = await supabase
+      final data = await supabase
           .from('gallery')
           .insert({
             'label': label,
             'image_url': publicUrl,
           })
           .select()
-          .single()
-          .execute();
-      return GalleryPhoto.fromMap(result.data as Map<String, dynamic>);
+          .single();
+      return GalleryPhoto.fromMap(data as Map<String, dynamic>);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -252,10 +229,72 @@ class SupabaseService {
     }
   }
 
+  static Future<List<Dish>> fetchMenu() async {
+    final seen = <String>{};
+
+    try {
+      final data = await supabase
+          .from('menu_packs')
+          .select('*')
+          .order('title');
+
+      final menuPacks = _mapMenuRows(data as List<dynamic>, seen);
+      if (menuPacks.isNotEmpty) {
+        return menuPacks;
+      }
+    } catch (e) {
+      print('SupabaseService.fetchMenu: Erreur lors du chargement ou table vide: $e');
+    }
+
+    return _defaultMenuPacks();
+  }
+
+  static List<Dish> _mapMenuRows(List<dynamic> data, Set<String> seen) {
+    return data
+        .cast<Map<String, dynamic>>()
+        .map((m) {
+          final rawCategory = (m['default_event_type'] ?? m['category_id'] ?? '').toString();
+          final category = _normalizeCategory(rawCategory);
+          final priceText = _normalizePriceText(m['price_text']?.toString() ?? '');
+          final priceValue = m['price'] is int
+              ? m['price'] as int
+              : int.tryParse(m['price']?.toString() ?? '0') ?? 0;
+          final includes = _parseIncludes(m['includes']);
+          return Dish(
+            id: m['id']?.toString() ?? '',
+            name: m['title']?.toString() ?? m['name']?.toString() ?? '',
+            category: category,
+            categoryId: m['category_id']?.toString() ?? '',
+            defaultEventType: m['default_event_type']?.toString() ?? '',
+            tag: m['tag']?.toString() ?? '',
+            priceNote: m['price_note']?.toString() ?? '',
+            defaultMenuPack: m['default_menu_pack']?.toString() ?? '',
+            premium: m['premium'] is bool
+                ? m['premium'] as bool
+                : m['premium'] is int
+                    ? m['premium'] != 0
+                    : m['premium']?.toString().toLowerCase() == 'true',
+            description: m['description']?.toString() ?? '',
+            price: priceValue,
+            priceText: priceText,
+            includes: includes,
+            imageUrl: m['image_url']?.toString() ?? '',
+          );
+        })
+        .where((dish) {
+          final key = '${dish.category.toLowerCase()}|${dish.name.toLowerCase()}|${dish.price}|${_normalizePriceText(dish.priceText).toLowerCase()}';
+          if (seen.contains(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .toList();
+  }
+
   static String _normalizeCategory(String category) {
     final lower = category.toLowerCase().trim();
     if (lower.contains('mariage')) return 'Mariage';
     if (lower.contains('autres') || lower.contains('cérémonies') || lower.contains('ceremonies')) return 'Autres cérémonies';
+    if (lower.contains('cocktail') || lower.contains('cocktails')) return 'Cocktail';
     if (lower.contains('extérieur') || lower.contains('exterieur')) return 'Espace extérieur';
     return category.trim();
   }
@@ -264,11 +303,10 @@ class SupabaseService {
     var normalized = priceText.replaceAll(RegExp(r'\s+'), ' ').trim();
     if (normalized.isEmpty) return normalized;
     normalized = normalized.replaceAll(RegExp(r'\$'), 'USD');
-    normalized = normalized.replaceAll(RegExp(r'(?i)usd'), 'USD');
+    normalized = normalized.replaceAll(RegExp(r'usd', caseSensitive: false), 'USD');
     normalized = normalized.replaceAll(RegExp(r'\s+USD'), ' USD');
     normalized = normalized.replaceAll(RegExp(r'USD\s+USD'), 'USD');
-    normalized = normalized.replaceAll(RegExp(r'\s+'), ' ').trim();
-    return normalized;
+    return normalized.replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
   static List<String> _parseIncludes(dynamic rawIncludes) {
@@ -293,233 +331,28 @@ class SupabaseService {
   static String _guessMimeType(String fileName) {
     final extension = fileName.split('.').last.toLowerCase();
     switch (extension) {
-      case 'jpg':
-      case 'jpeg':
-        return 'image/jpeg';
-      case 'png':
-        return 'image/png';
-      case 'gif':
-        return 'image/gif';
-      case 'webp':
-        return 'image/webp';
-      default:
-        return 'application/octet-stream';
+      case 'jpg': case 'jpeg': return 'image/jpeg';
+      case 'png': return 'image/png';
+      case 'gif': return 'image/gif';
+      case 'webp': return 'image/webp';
+      default: return 'application/octet-stream';
     }
-  }
-
-  static Future<List<Dish>> fetchMenu() async {
-    final allowed = <String>{'mariage', 'autres_ceremonies', 'exterieur', 'Mariage', 'Autres cérémonies', 'Espace extérieur'};
-    final seen = <String>{};
-
-    try {
-      final result = await supabase
-          .from('menu_packs')
-          .select('*')
-          .order('title')
-          .execute();
-
-      final data = result.data as List<dynamic>?;
-      final menuPacks = _mapMenuRows(data, allowed, seen);
-      if (menuPacks.isNotEmpty) {
-        return menuPacks;
-      }
-    } catch (_) {
-      // ignore and attempt fallback
-    }
-
-    try {
-      final fallbackResult = await supabase
-          .from('menu')
-          .select('*')
-          .order('name')
-          .execute();
-      final fallbackData = fallbackResult.data as List<dynamic>?;
-      final legacyMenu = _mapMenuRows(fallbackData, allowed, seen);
-      if (legacyMenu.isNotEmpty) {
-        print('SupabaseService.fetchMenu: loaded fallback legacy menu with ${legacyMenu.length} items');
-        return legacyMenu;
-      }
-    } catch (_) {
-      // ignore and use local default fallback
-    }
-
-    return _defaultMenuPacks();
-  }
-
-  static List<Dish> _mapMenuRows(List<dynamic>? data, Set<String> allowed, Set<String> seen) {
-    return (data ?? [])
-        .cast<Map<String, dynamic>>()
-        .where((m) {
-          final rawCategory = (m['default_event_type'] ?? m['category'] ?? m['category_id'] ?? '').toString();
-          final category = _normalizeCategory(rawCategory);
-          return allowed.contains(category);
-        })
-        .map((m) {
-          final rawCategory = (m['default_event_type'] ?? m['category'] ?? m['category_id'] ?? '').toString();
-          final category = _normalizeCategory(rawCategory);
-          final priceText = _normalizePriceText(m['price_text']?.toString() ?? '');
-          final priceValue = m['price'] is int
-              ? m['price'] as int
-              : int.tryParse(m['price']?.toString() ?? '0') ?? 0;
-          final includes = _parseIncludes(m['includes']);
-          return Dish(
-            id: m['id']?.toString() ?? '',
-            name: m['title']?.toString() ?? m['name']?.toString() ?? '',
-            category: category,
-            description: m['description']?.toString() ?? '',
-            price: priceValue,
-            priceText: priceText,
-            includes: includes,
-            imageUrl: m['image_url']?.toString() ?? '',
-          );
-        })
-        .where((dish) {
-          final key = '${dish.category.toLowerCase()}|${dish.name.toLowerCase()}|${dish.price}|${_normalizePriceText(dish.priceText).toLowerCase()}';
-          if (seen.contains(key)) {
-            return false;
-          }
-          seen.add(key);
-          return true;
-        })
-        .toList();
   }
 
   static List<Dish> _defaultMenuPacks() {
     return [
-      Dish(
-        id: 'mariage_1',
-        name: 'Décoration Basique',
-        category: 'Mariage',
-        description: 'Décoration basique pour mariage avec mise en place standard et ambiance élégante.',
-        price: 2500,
-        priceText: '2 500 USD',
-        includes: [
-          'Nappes et housses de chaises assorties',
-          'Centres de table simples',
-          'Éclairage d’ambiance doux',
-          'Décoration de la table d’honneur',
-        ],
-        imageUrl: 'assets/images/decosimple.jpg',
-      ),
-      Dish(
-        id: 'mariage_2',
-        name: 'Décoration Moyenne',
-        category: 'Mariage',
-        description: 'Décoration moyenne pour mariage avec éléments floraux et mobilier décoratif.',
-        price: 3000,
-        priceText: '3 000 USD',
-        includes: [
-          'Tout le pack Basique',
-          'Arches florales ou structure de cérémonie',
-          'Chemins de table et décorations supplémentaires',
-          'Décoration de chaises et signalétique',
-        ],
-        imageUrl: 'assets/images/decomoyenne.png',
-      ),
-      Dish(
-        id: 'mariage_3',
-        name: 'Décoration VIP',
-        category: 'Mariage',
-        description: 'Décoration VIP pour mariage avec touches luxueuses et mise en scène complète.',
-        price: 3500,
-        priceText: '3 500 USD',
-        includes: [
-          'Tout le pack Moyenne',
-          'Décoration florale premium',
-          'Mobilier lounge et coin photo',
-          'Installation personnalisée haut de gamme',
-        ],
-        imageUrl: 'assets/images/decoluxe.jpg',
-      ),
-      Dish(
-        id: 'autres_1',
-        name: 'Réunion, conférence, formation',
-        category: 'Autres cérémonies',
-        description: 'Pack événementiel pour réunion, conférence ou formation avec matériel de base.',
-        price: 250,
-        priceText: '250 USD',
-        includes: [
-          'Tables et chaises pour participants',
-          'Matériel de présentation (projecteur, écran)',
-          'Sonorisation légère',
-          'Aménagement de l’espace et accueil',
-        ],
-        imageUrl: 'assets/images/conference.jpg',
-      ),
-      Dish(
-        id: 'autres_2',
-        name: 'Mariage coutumier (option A)',
-        category: 'Autres cérémonies',
-        description: 'Formule mariage coutumier pour samedi avec décor traditionnel et espace cérémonial.',
-        price: 170,
-        priceText: '170 USD',
-        includes: [
-          'Décoration adaptée aux traditions',
-          'Installation de la scène cérémoniale',
-          'Coin d’accueil et mobilier décoratif',
-          'Éclairage chaleureux',
-        ],
-        imageUrl: 'assets/images/mariagecoutumier.jpg',
-      ),
-      Dish(
-        id: 'autres_3',
-        name: 'Mariage coutumier (option B)',
-        category: 'Autres cérémonies',
-        description: 'Formule mariage coutumier pour vendredi et dimanche avec décoration simplifiée.',
-        price: 150,
-        priceText: '150 USD',
-        includes: [
-          'Décoration traditionnelle légère',
-          'Coin cérémonie et tables de réception',
-          'Éléments de décoration culturelle',
-          'Accueil et signalétique',
-        ],
-        imageUrl: 'assets/images/mariagecoutumier.jfif',
-      ),
-      Dish(
-        id: 'exterieur_1',
-        name: 'Décoration Basique',
-        category: 'Espace extérieur',
-        description: 'Décoration basique pour espace extérieur avec ambiance naturelle.',
-        price: 500,
-        priceText: '500 USD',
-        includes: [
-          'Guirlandes lumineuses et lampions',
-          'Mobilier de jardin simple',
-          'Décoration de tables et chemins extérieurs',
-          'Aménagement d’un espace cocktail',
-        ],
-        imageUrl: 'assets/images/decoexternebasique.jfif',
-      ),
-      Dish(
-        id: 'exterieur_2',
-        name: 'Décoration VIP',
-        category: 'Espace extérieur',
-        description: 'Décoration VIP pour espace extérieur avec touches festives et élégantes.',
-        price: 850,
-        priceText: '850 USD',
-        includes: [
-          'Tout le pack Basique',
-          'Décorations fleuries et luminaires premium',
-          'Espace lounge extérieur',
-          'Aménagement de piste et accueil VIP',
-        ],
-        imageUrl: 'assets/images/decoexterneluxe.jfif',
-      ),
+      Dish(id: 'mariage_1', name: 'Décoration Basique', category: 'Mariage', description: 'Décoration basique.', price: 2500, priceText: '2 500 USD', includes: [], imageUrl: 'assets/images/decosimple.jpg'),
     ];
   }
 
   static Future<List<Apartment>> fetchApartments() async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('apartments')
           .select('*')
-          .order('price', ascending: true)
-          .execute();
-      final data = result.data as List<dynamic>?;
-      return (data ?? [])
-          .cast<Map<String, dynamic>>()
-          .map(Apartment.fromMap)
+          .order('price', ascending: true);
+      return (data as List<dynamic>)
+          .map((e) => Apartment.fromMap(e as Map<String, dynamic>))
           .toList();
     } on PostgrestException catch (error) {
       throw error.message;
@@ -528,13 +361,12 @@ class SupabaseService {
 
   static Future<Apartment> addApartment(Apartment apartment) async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('apartments')
           .insert(apartment.toMap())
           .select()
-          .single()
-          .execute();
-      return Apartment.fromMap(result.data as Map<String, dynamic>);
+          .single();
+      return Apartment.fromMap(data as Map<String, dynamic>);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -542,14 +374,13 @@ class SupabaseService {
 
   static Future<Apartment> updateApartmentImages(String apartmentId, List<String> imageUrls) async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('apartments')
           .update({'image_url': jsonEncode(imageUrls)})
           .eq('id', apartmentId)
           .select()
-          .single()
-          .execute();
-      return Apartment.fromMap(result.data as Map<String, dynamic>);
+          .single();
+      return Apartment.fromMap(data as Map<String, dynamic>);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -557,7 +388,7 @@ class SupabaseService {
 
   static Future<void> removeApartment(String apartmentId) async {
     try {
-      await supabase.from('apartments').delete().eq('id', apartmentId).execute();
+      await supabase.from('apartments').delete().eq('id', apartmentId);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -565,25 +396,12 @@ class SupabaseService {
 
   static Future<Dish> addMenuItem(Dish dish) async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('menu_packs')
           .insert(dish.toMap())
           .select()
-          .single()
-          .execute();
-      return Dish.fromMap(result.data as Map<String, dynamic>);
-    } on PostgrestException {
-      // Fallback to legacy menu table if menu_packs is unavailable.
-    }
-
-    try {
-      final result = await supabase
-          .from('menu')
-          .insert(dish.toMap())
-          .select()
-          .single()
-          .execute();
-      return Dish.fromMap(result.data as Map<String, dynamic>);
+          .single();
+      return Dish.fromMap(data as Map<String, dynamic>);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -591,27 +409,13 @@ class SupabaseService {
 
   static Future<Dish> updateMenuItem(Dish dish) async {
     try {
-      final result = await supabase
+      final data = await supabase
           .from('menu_packs')
           .update(dish.toMap())
           .eq('id', dish.id)
           .select()
-          .single()
-          .execute();
-      return Dish.fromMap(result.data as Map<String, dynamic>);
-    } on PostgrestException {
-      // Fallback to legacy menu table if updating menu_packs fails.
-    }
-
-    try {
-      final result = await supabase
-          .from('menu')
-          .update(dish.toMap())
-          .eq('id', dish.id)
-          .select()
-          .single()
-          .execute();
-      return Dish.fromMap(result.data as Map<String, dynamic>);
+          .single();
+      return Dish.fromMap(data as Map<String, dynamic>);
     } on PostgrestException catch (error) {
       throw error.message;
     }
@@ -619,17 +423,7 @@ class SupabaseService {
 
   static Future<void> removeMenuItem(String dishId) async {
     try {
-      final result = await supabase.from('menu_packs').delete().eq('id', dishId).execute();
-      final deleted = result.data;
-      if (deleted != null && (deleted is List ? deleted.isNotEmpty : true)) {
-        return;
-      }
-    } on PostgrestException {
-      // Fallback to legacy menu table if deleting from menu_packs fails.
-    }
-
-    try {
-      await supabase.from('menu').delete().eq('id', dishId).execute();
+      await supabase.from('menu_packs').delete().eq('id', dishId);
     } on PostgrestException catch (error) {
       throw error.message;
     }

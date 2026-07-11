@@ -149,24 +149,9 @@ class _CalendarPanelState extends State<CalendarPanel> {
           const Text('Réservé', style: TextStyle(fontSize: 14)),
         ]),
         const SizedBox(height: 24),
-        const Text('Prochaines réservations',
-            style: TextStyle(fontWeight: FontWeight.w700)),
-        const SizedBox(height: 12),
-        if (upcoming.isEmpty)
-          const Text('Aucune réservation à venir.',
-              style: TextStyle(color: Colors.black54)),
-        for (var r in upcoming.take(6))
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
-              '${r.date.day}/${r.date.month}/${r.date.year} — ${r.time.format(context)} • ${r.guests} pers.',
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
       ],
     );
   }
-
   Widget _buildCalendarSection(
       List<DateTime?> days, Set<DateTime> booked, DateTime today, bool isMobile) {
     return Column(

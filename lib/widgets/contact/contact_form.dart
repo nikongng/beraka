@@ -226,8 +226,8 @@ class _ContactFormState extends State<ContactForm> {
   }
 
   Future<void> _sendEmail(ContactRequest request) async {
-    final email = 'beracasvalley@gmail.com';
-    final subject = 'Demande de contact - Beraca\'s Valley';
+    const email = 'beracasvalley@gmail.com';
+    const subject = 'Demande de contact - Beraca\'s Valley';
     final body = '''Nom : ${request.fullName}
 Téléphone : ${request.phone}
 Email : ${request.email}

@@ -4,12 +4,14 @@ import 'package:beraca/responsive/responsive.dart';
 import 'package:beraca/theme/app_theme.dart';
 import 'package:beraca/widgets/section_title.dart';
 
+import '../models.dart';
+
 class GallerySection extends StatelessWidget {
-  final List<Map<String, String>> items;
+  final List<GalleryAlbum> albums;
 
   const GallerySection({
     super.key,
-    required this.items,
+    required this.albums,
   });
 
   @override
@@ -28,7 +30,7 @@ class GallerySection extends StatelessWidget {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: items.length,
+            itemCount: albums.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: Responsive.gridColumns(context),
               crossAxisSpacing: 24,
@@ -36,13 +38,8 @@ class GallerySection extends StatelessWidget {
               childAspectRatio: 1.25,
             ),
             itemBuilder: (context, index) {
-              final image = items[index]["image"]!;
-              final label = items[index]["label"]!;
-
-              return _GalleryCard(
-                image: image,
-                label: label,
-              );
+              final album = albums[index];
+              return _GalleryCard(album: album);
             },
           ),
         ],
@@ -52,12 +49,10 @@ class GallerySection extends StatelessWidget {
 }
 
 class _GalleryCard extends StatefulWidget {
-  final String image;
-  final String label;
+  final GalleryAlbum album;
 
   const _GalleryCard({
-    required this.image,
-    required this.label,
+    required this.album,
   });
 
   @override
@@ -69,15 +64,18 @@ class _GalleryCardState extends State<_GalleryCard> {
 
   @override
   Widget build(BuildContext context) {
-    final imageWidget = widget.image.startsWith("http")
+    final coverUrl = widget.album.coverImageUrl;
+    final imageWidget = coverUrl.startsWith("http")
         ? Image.network(
-            widget.image,
+            coverUrl,
             fit: BoxFit.cover,
           )
         : Image.asset(
-            widget.image,
+            coverUrl,
             fit: BoxFit.cover,
           );
+
+    final photoCount = widget.album.photoCount;
 
     return MouseRegion(
       onEnter: (_) {
@@ -111,7 +109,7 @@ class _GalleryCardState extends State<_GalleryCard> {
               children: [
                 Positioned.fill(
                   child: Hero(
-                    tag: "gallery_${widget.label}",
+                    tag: 'gallery_${widget.album.title}_${coverUrl}',
                     child: imageWidget,
                   ),
                 ),
@@ -124,7 +122,7 @@ class _GalleryCardState extends State<_GalleryCard> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withValues(alpha: hover ? .65 : .45),
+                          Colors.black.withOpacity(hover ? .65 : .45),
                         ],
                       ),
                     ),
@@ -137,13 +135,26 @@ class _GalleryCardState extends State<_GalleryCard> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          widget.label,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.album.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '$photoCount photo(s)',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       InkWell(
@@ -151,8 +162,8 @@ class _GalleryCardState extends State<_GalleryCard> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => _GalleryPreviewPage(
-                                image: widget.image,
-                                tag: 'gallery_${widget.label}',
+                                album: widget.album,
+                                tag: 'gallery_${widget.album.title}_${coverUrl}',
                               ),
                               fullscreenDialog: true,
                             ),
@@ -184,18 +195,33 @@ class _GalleryCardState extends State<_GalleryCard> {
   }
 }
 
-class _GalleryPreviewPage extends StatelessWidget {
-  final String image;
+class _GalleryPreviewPage extends StatefulWidget {
+  final GalleryAlbum album;
   final String tag;
 
-  const _GalleryPreviewPage({required this.image, required this.tag});
+  const _GalleryPreviewPage({required this.album, required this.tag});
+
+  @override
+  State<_GalleryPreviewPage> createState() => _GalleryPreviewPageState();
+}
+
+class _GalleryPreviewPageState extends State<_GalleryPreviewPage> {
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final imageWidget = image.startsWith('http')
-        ? Image.network(image, fit: BoxFit.contain)
-        : Image.asset(image, fit: BoxFit.contain);
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -205,17 +231,67 @@ class _GalleryPreviewPage extends StatelessWidget {
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        title: Text(widget.album.title),
       ),
-      body: Center(
-        child: Hero(
-          tag: tag,
-          child: InteractiveViewer(
-            panEnabled: true,
-            minScale: 0.5,
-            maxScale: 4.0,
-            child: imageWidget,
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: widget.album.photos.length,
+              itemBuilder: (context, index) {
+                final photo = widget.album.photos[index];
+                final imageWidget = photo.imageUrl.startsWith('http')
+                    ? Image.network(photo.imageUrl, fit: BoxFit.contain)
+                    : Image.asset(photo.imageUrl, fit: BoxFit.contain);
+
+                return Center(
+                  child: index == 0
+                      ? Hero(
+                          tag: widget.tag,
+                          child: InteractiveViewer(
+                            panEnabled: true,
+                            minScale: 0.5,
+                            maxScale: 4.0,
+                            child: imageWidget,
+                          ),
+                        )
+                      : InteractiveViewer(
+                          panEnabled: true,
+                          minScale: 0.5,
+                          maxScale: 4.0,
+                          child: imageWidget,
+                        ),
+                );
+              },
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Photo ${_pageController.hasClients ? (_pageController.page?.round() ?? 0) + 1 : 1} sur ${widget.album.photoCount}',
+                  style: const TextStyle(color: Colors.white70),
+                ),
+                TextButton(
+                  onPressed: () {
+                    final nextPage = (_pageController.page?.round() ?? 0) + 1;
+                    if (nextPage < widget.album.photoCount) {
+                      _pageController.animateToPage(
+                        nextPage,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    }
+                  },
+                  child: const Text('Suivant', style: TextStyle(color: Colors.white)),
+                )
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

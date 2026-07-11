@@ -4,8 +4,14 @@ import 'package:flutter/material.dart';
 
 class Dish {
   final String id;
-  final String name;
   final String category;
+  final String name;
+  final String categoryId;
+  final String defaultEventType;
+  final String tag;
+  final String priceNote;
+  final String defaultMenuPack;
+  final bool premium;
   final String description;
   final int price;
   final String priceText;
@@ -14,8 +20,14 @@ class Dish {
 
   Dish({
     required this.id,
-    required this.name,
     required this.category,
+    required this.name,
+    this.categoryId = '',
+    this.defaultEventType = '',
+    this.tag = '',
+    this.priceNote = '',
+    this.defaultMenuPack = '',
+    this.premium = false,
     required this.description,
     required this.price,
     this.priceText = '',
@@ -39,10 +51,21 @@ class Dish {
       includes.addAll(rawIncludes.cast<String>());
     }
 
+    final rawCategory = (map['default_event_type'] ?? map['category_id'] ?? map['category'] ?? '').toString();
     return Dish(
       id: map['id']?.toString() ?? '',
-      name: map['name']?.toString() ?? '',
-      category: map['category']?.toString() ?? '',
+      category: _normalizeCategory(rawCategory),
+      name: map['title']?.toString() ?? map['name']?.toString() ?? '',
+      categoryId: map['category_id']?.toString() ?? '',
+      defaultEventType: map['default_event_type']?.toString() ?? '',
+      tag: map['tag']?.toString() ?? '',
+      priceNote: map['price_note']?.toString() ?? '',
+      defaultMenuPack: map['default_menu_pack']?.toString() ?? '',
+      premium: map['premium'] is bool
+          ? map['premium'] as bool
+          : map['premium'] is int
+              ? map['premium'] != 0
+              : map['premium']?.toString().toLowerCase() == 'true',
       description: map['description']?.toString() ?? '',
       price: map['price'] is int
           ? map['price'] as int
@@ -54,17 +77,32 @@ class Dish {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
+    final data = {
+      if (id.isNotEmpty) 'id': id,
       'title': name,
-      'category': category,
       'description': description,
       'price': price,
       'price_text': priceText,
       'includes': includes,
       'image_url': imageUrl,
+      if (categoryId.isNotEmpty) 'category_id': categoryId,
+      if (tag.isNotEmpty) 'tag': tag,
+      if (priceNote.isNotEmpty) 'price_note': priceNote,
+      'premium': premium,
+      if (defaultMenuPack.isNotEmpty) 'default_menu_pack': defaultMenuPack,
+      if (defaultEventType.isNotEmpty) 'default_event_type': defaultEventType,
     };
+    return data;
+  }
+
+  static String _normalizeCategory(String category) {
+    final lower = category.toLowerCase().trim();
+    if (lower.contains('mariage')) return 'Mariage';
+    if (lower.contains('traiteur') || lower.contains('traiteurs')) return 'Services traiteurs';
+    if (lower.contains('cocktail') || lower.contains('cocktails')) return 'Cocktail';
+    if (lower.contains('autres') || lower.contains('cérémonies') || lower.contains('ceremonies')) return 'Autres cérémonies';
+    if (lower.contains('extérieur') || lower.contains('exterieur')) return 'Espace extérieur';
+    return category.trim();
   }
 }
 
@@ -242,3 +280,35 @@ class GalleryPhoto {
     };
   }
 }
+
+class GalleryAlbum {
+  final String title;
+  final List<GalleryPhoto> photos;
+
+  GalleryAlbum({
+    required this.title,
+    required this.photos,
+  });
+
+  String get coverImageUrl => photos.first.imageUrl;
+  int get photoCount => photos.length;
+
+  static List<GalleryAlbum> groupByTitle(List<GalleryPhoto> photos) {
+    final grouped = <String, List<GalleryPhoto>>{};
+
+    for (final photo in photos) {
+      final title = photo.label.trim().isEmpty ? 'Sans titre' : photo.label.trim();
+      grouped.putIfAbsent(title, () => []).add(photo);
+    }
+
+    final albums = grouped.entries.map((entry) {
+      final groupedPhotos = List<GalleryPhoto>.from(entry.value);
+      groupedPhotos.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      return GalleryAlbum(title: entry.key, photos: groupedPhotos);
+    }).toList();
+
+    albums.sort((a, b) => b.photos.first.createdAt.compareTo(a.photos.first.createdAt));
+    return albums;
+  }
+}
+

@@ -68,7 +68,7 @@ class _ApartmentsScreenState extends State<ApartmentsScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(24),
                           child: Text(
-                            'Aucun appartement n’a encore été ajouté par l’admin.',
+                            'Bientot disponible.',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodyLarge,
                           ),

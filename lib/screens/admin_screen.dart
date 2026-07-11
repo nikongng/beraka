@@ -17,16 +17,24 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _galleryLabelController = TextEditingController();
+  final TextEditingController _galleryAlbumTitleController = TextEditingController();
   final TextEditingController _menuNameController = TextEditingController();
   final TextEditingController _menuDescriptionController = TextEditingController();
   final TextEditingController _menuPriceController = TextEditingController();
-  final TextEditingController _menuCategoryController = TextEditingController();
+  final TextEditingController _menuTagController = TextEditingController();
+  String _menuCategoryId = 'Mariage';
+  final TextEditingController _menuDefaultMenuPackController = TextEditingController();
+  final TextEditingController _menuPriceNoteController = TextEditingController();
+
+  bool get _isServiceTraiteur => _menuCategoryId == 'Services traiteurs';
+  bool get _isShortMenuCategory => _isServiceTraiteur || _menuCategoryId == 'Cocktail';
+  final TextEditingController _menuIncludesController = TextEditingController();
   final TextEditingController _apartmentTitleController = TextEditingController();
+  bool _menuPremium = false;
   final TextEditingController _apartmentDescriptionController = TextEditingController();
   final TextEditingController _apartmentPriceController = TextEditingController();
   List<PlatformFile> _selectedApartmentFiles = [];
-  PlatformFile? _selectedGalleryFile;
+  List<PlatformFile> _selectedGalleryFiles = [];
   PlatformFile? _selectedMenuImageFile;
   Dish? _editingMenuItem;
   bool _isLoading = false;
@@ -233,39 +241,49 @@ class _AdminScreenState extends State<AdminScreen> {
           ],
         ),
         const SizedBox(height: 20),
-        Text('Ajouter une photo à la galerie',
+        Text('Ajouter un album à la galerie',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
         const SizedBox(height: 12),
         TextField(
-          controller: _galleryLabelController,
-          decoration: const InputDecoration(labelText: 'Titre de la photo'),
+          controller: _galleryAlbumTitleController,
+          decoration: const InputDecoration(labelText: 'Titre de l’album'),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Sélectionnez une photo de couverture et des sous-photos.',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _isLoading ? null : _selectGalleryFile,
+                onPressed: _isLoading ? null : _selectGalleryFiles,
                 icon: const Icon(Icons.upload_file),
-                label: const Text('Choisir une photo'),
+                label: const Text('Choisir des photos'),
               ),
             ),
           ],
         ),
         const SizedBox(height: 8),
         Text(
-          _selectedGalleryFile == null
+          _selectedGalleryFiles.isEmpty
               ? 'Aucune photo sélectionnée'
-              : 'Photo : ${_selectedGalleryFile!.name}',
+              : '${_selectedGalleryFiles.length} photo(s) sélectionnée(s)',
           style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'La première photo sélectionnée sera utilisée comme couverture sur la page d’accueil.',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
         ),
         const SizedBox(height: 12),
         ElevatedButton.icon(
-          onPressed: (!_isLoading && _selectedGalleryFile != null)
-              ? _uploadGalleryPhoto
+          onPressed: (!_isLoading && _selectedGalleryFiles.isNotEmpty)
+              ? _uploadGalleryPhotos
               : null,
           icon: const Icon(Icons.photo_library),
-          label: const Text('Uploader dans la galerie'),
+          label: const Text('Uploader l’album'),
         ),
         const SizedBox(height: 24),
         Text('Photos déjà présentes',
@@ -335,20 +353,78 @@ class _AdminScreenState extends State<AdminScreen> {
         const SizedBox(height: 12),
         TextField(
           controller: _menuDescriptionController,
-          decoration: const InputDecoration(labelText: 'Description du pack'),
+          decoration: InputDecoration(
+            labelText: _isShortMenuCategory ? 'Détail du plat' : 'Description du pack',
+          ),
+          maxLines: _isShortMenuCategory ? 4 : 2,
         ),
+        if (!_isShortMenuCategory) ...[
+          const SizedBox(height: 12),
+          TextField(
+            controller: _menuPriceController,
+            keyboardType: TextInputType.number,
+            decoration:
+                const InputDecoration(labelText: 'Prix du pack (USD)'),
+          ),
+        ],
         const SizedBox(height: 12),
-        TextField(
-          controller: _menuPriceController,
-          keyboardType: TextInputType.number,
-          decoration:
-              const InputDecoration(labelText: 'Prix du pack (en centimes)'),
+        DropdownButtonFormField<String>(
+          value: _menuCategoryId,
+          decoration: const InputDecoration(labelText: 'Catégorie'),
+          items: const [
+            DropdownMenuItem(value: 'Mariage', child: Text('Mariage')),
+            DropdownMenuItem(value: 'Autres cérémonies', child: Text('Autres cérémonies')),
+            DropdownMenuItem(value: 'Espace extérieur', child: Text('Espace extérieur')),
+            DropdownMenuItem(value: 'Services traiteurs', child: Text('Services traiteurs')),
+            DropdownMenuItem(value: 'Cocktail', child: Text('Cocktail')),
+            DropdownMenuItem(value: 'Tous', child: Text('Tous')),
+          ],
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                _menuCategoryId = value;
+              });
+            }
+          },
         ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _menuCategoryController,
-          decoration: const InputDecoration(labelText: 'Type de pack (Standard, Premium, VIP)'),
-        ),
+        if (!_isShortMenuCategory) ...[
+          const SizedBox(height: 12),
+          TextField(
+            controller: _menuDefaultMenuPackController,
+            decoration: const InputDecoration(labelText: 'Sous menu'),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _menuTagController,
+            decoration: const InputDecoration(labelText: 'tag'),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _menuPriceNoteController,
+            decoration: const InputDecoration(labelText: 'price_note'),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: SwitchListTile(
+                  title: const Text('Premium'),
+                  value: _menuPremium,
+                  onChanged: (value) {
+                    setState(() {
+                      _menuPremium = value;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _menuIncludesController,
+            decoration: const InputDecoration(labelText: 'Services inclus (séparées par des virgules)'),
+          ),
+        ],
         const SizedBox(height: 12),
         Row(
           children: [
@@ -398,7 +474,7 @@ class _AdminScreenState extends State<AdminScreen> {
               return Card(
                 child: ListTile(
                   title: Text(dish.name),
-                  subtitle: Text('${dish.category} • ${(dish.price/100).toStringAsFixed(2)}€'),
+                  subtitle: Text('${dish.category} • ${dish.priceText.isNotEmpty ? dish.priceText : '${dish.price} USD'}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -626,32 +702,42 @@ class _AdminScreenState extends State<AdminScreen> {
                           ),
                         ],
                       ),
-                      trailing: reservation.isPending
-                          ? PopupMenuButton<String>(
-                              onSelected: (choice) =>
-                                  _handleReservationAction(reservation, choice),
-                              itemBuilder: (_) => const [
-                                PopupMenuItem(
-                                  value: 'confirm',
-                                  child: Text('Confirmer'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.info_outline),
+                            tooltip: 'Voir les détails',
+                            onPressed: () => _showReservationDetails(reservation),
+                          ),
+                          reservation.isPending
+                              ? PopupMenuButton<String>(
+                                  onSelected: (choice) =>
+                                      _handleReservationAction(reservation, choice),
+                                  itemBuilder: (_) => const [
+                                    PopupMenuItem(
+                                      value: 'confirm',
+                                      child: Text('Confirmer'),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'refuse',
+                                      child: Text('Refuser'),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 'delete',
+                                      child: Text('Supprimer'),
+                                    ),
+                                  ],
+                                  icon: const Icon(Icons.more_vert),
+                                )
+                              : IconButton(
+                                  icon: Icon(Icons.delete,
+                                      color: Theme.of(context).colorScheme.error),
+                                  onPressed: () => _cancelReservation(reservation),
+                                  tooltip: 'Annuler la réservation',
                                 ),
-                                PopupMenuItem(
-                                  value: 'refuse',
-                                  child: Text('Refuser'),
-                                ),
-                                PopupMenuItem(
-                                  value: 'delete',
-                                  child: Text('Supprimer'),
-                                ),
-                              ],
-                              icon: const Icon(Icons.more_vert),
-                            )
-                          : IconButton(
-                              icon: Icon(Icons.delete,
-                                  color: Theme.of(context).colorScheme.error),
-                              onPressed: () => _cancelReservation(reservation),
-                              tooltip: 'Annuler la réservation',
-                            ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -723,6 +809,9 @@ class _AdminScreenState extends State<AdminScreen> {
         _userEmail = currentSupabaseUser()?.email;
       });
       await _loadReservations();
+      await _loadGalleryPhotos();
+      await _loadMenuItems();
+      await _loadApartments();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connexion admin réussie.')),
       );
@@ -808,10 +897,65 @@ class _AdminScreenState extends State<AdminScreen> {
     }
   }
 
-  Future<void> _selectGalleryFile() async {
+  void _showReservationDetails(Reservation reservation) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Détails de la réservation'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _detailRow('Nom', reservation.guestName),
+              _detailRow('Téléphone', reservation.phone),
+              _detailRow('Email', reservation.email),
+              _detailRow('Date',
+                  '${reservation.date.day}/${reservation.date.month}/${reservation.date.year}'),
+              _detailRow('Heure', reservation.time.format(context)),
+              _detailRow('Nombre de personnes', reservation.guests.toString()),
+              _detailRow('Type d’événement', reservation.eventType.isEmpty ? '-' : reservation.eventType),
+              _detailRow('Pack', reservation.menuPack.isEmpty ? '-' : reservation.menuPack),
+              _detailRow('Statut', reservation.status),
+              const SizedBox(height: 12),
+              const Text(
+                'Note',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(reservation.note.isEmpty ? '-' : reservation.note),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Fermer'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label : ',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _selectGalleryFiles() async {
     final result = await FilePicker.pickFiles(
       type: FileType.image,
-      allowMultiple: false,
+      allowMultiple: true,
       withData: true,
     );
 
@@ -820,7 +964,7 @@ class _AdminScreenState extends State<AdminScreen> {
     }
 
     setState(() {
-      _selectedGalleryFile = result.files.first;
+      _selectedGalleryFiles = result.files;
     });
   }
 
@@ -930,14 +1074,12 @@ class _AdminScreenState extends State<AdminScreen> {
     }
   }
 
-  Future<void> _uploadGalleryPhoto() async {
-    final label = _galleryLabelController.text.trim();
-    final file = _selectedGalleryFile;
+  Future<void> _uploadGalleryPhotos() async {
+    final title = _galleryAlbumTitleController.text.trim();
 
-    if (label.isEmpty || file == null || file.bytes == null) {
+    if (title.isEmpty || _selectedGalleryFiles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Sélectionnez une photo et renseignez un titre.')),
+        const SnackBar(content: Text('Renseignez le titre de l’album et sélectionnez des photos.')),
       );
       return;
     }
@@ -947,14 +1089,19 @@ class _AdminScreenState extends State<AdminScreen> {
     });
 
     try {
-      await SupabaseService.uploadGalleryPhoto(label, file.bytes!, file.name);
+      for (final file in _selectedGalleryFiles) {
+        if (file.bytes == null) {
+          continue;
+        }
+        await SupabaseService.uploadGalleryPhoto(title, file.bytes!, file.name);
+      }
       await _loadGalleryPhotos();
-      _galleryLabelController.clear();
+      _galleryAlbumTitleController.clear();
       setState(() {
-        _selectedGalleryFile = null;
+        _selectedGalleryFiles = [];
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Photo uploadée dans la galerie.')),
+        const SnackBar(content: Text('Album uploadé dans la galerie.')),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -999,16 +1146,41 @@ class _AdminScreenState extends State<AdminScreen> {
     }
   }
 
-  Future<void> _addMenuItem() async {
+Future<void> _addMenuItem() async {
     final name = _menuNameController.text.trim();
     final description = _menuDescriptionController.text.trim();
     final price = int.tryParse(_menuPriceController.text.trim()) ?? 0;
-    final category = _menuCategoryController.text.trim();
+    final categoryId = _menuCategoryId;
+    final defaultMenuPack = _menuDefaultMenuPackController.text.trim();
+    final tag = _menuTagController.text.trim();
+    final priceNote = _menuPriceNoteController.text.trim();
+    final premium = _menuPremium;
     final selectedFile = _selectedMenuImageFile;
 
-    if (name.isEmpty || description.isEmpty || category.isEmpty) {
+    // Transformation du champ texte en liste (séparé par des virgules)
+    final includesList = _menuIncludesController.text
+        .split(',')
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    if (name.isEmpty || description.isEmpty || categoryId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Remplissez tous les champs du plat.')),
+        const SnackBar(content: Text('Remplissez tous les champs obligatoires du pack.')),
+      );
+      return;
+    }
+
+    if (_isShortMenuCategory && selectedFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sélectionnez une photo pour ce type de menu.')),
+      );
+      return;
+    }
+
+    if (!_isShortMenuCategory && price <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Indiquez un prix valide pour le pack.')),
       );
       return;
     }
@@ -1020,15 +1192,23 @@ class _AdminScreenState extends State<AdminScreen> {
     try {
       String imageUrl = '';
       if (selectedFile != null && selectedFile.bytes != null) {
+        // Note: Nous utilisons uploadApartmentImage comme méthode générique d'upload d'image selon votre service
         imageUrl = await SupabaseService.uploadApartmentImage(selectedFile.bytes!, selectedFile.name);
       }
 
       final dish = Dish(
         id: _editingMenuItem?.id ?? '',
         name: name,
-        category: category,
+        category: categoryId,
+        categoryId: categoryId,
+        defaultMenuPack: defaultMenuPack,
+        tag: tag,
+        priceNote: priceNote,
+        premium: premium,
         description: description,
         price: price,
+        priceText: price > 0 ? '$price USD' : '',
+        includes: includesList,  // Ajout de la liste des inclusions
         imageUrl: imageUrl.isNotEmpty ? imageUrl : (_editingMenuItem?.imageUrl ?? ''),
       );
 
@@ -1041,45 +1221,91 @@ class _AdminScreenState extends State<AdminScreen> {
         throw 'Le plat n’a pas été enregistré.';
       }
 
+      // Nettoyage de tous les champs
       _menuNameController.clear();
       _menuDescriptionController.clear();
       _menuPriceController.clear();
-      _menuCategoryController.clear();
+      _menuCategoryId = 'Mariage';
+      _menuDefaultMenuPackController.clear();
+      _menuTagController.clear();
+      _menuPriceNoteController.clear();
+      _menuIncludesController.clear(); 
+      _menuPremium = false;
       _selectedMenuImageFile = null;
       _editingMenuItem = null;
+      
       await _loadMenuItems();
+      
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(isEditing ? 'Pack modifié.' : 'Plat ajouté au menu.')),
       );
     } catch (error) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erreur lors de l’enregistrement du pack : $error')),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-
-  void _startEditingMenuItem(Dish dish) {
+void _startEditingMenuItem(Dish dish) {
     setState(() {
       _editingMenuItem = dish;
       _menuNameController.text = dish.name;
       _menuDescriptionController.text = dish.description;
       _menuPriceController.text = dish.price.toString();
-      _menuCategoryController.text = dish.category;
+      _menuCategoryId = _normalizeCategoryForDropdown(
+        dish.categoryId.isNotEmpty ? dish.categoryId : dish.category,
+      );
+      _menuDefaultMenuPackController.text = dish.defaultMenuPack;
+      _menuTagController.text = dish.tag;
+      _menuPriceNoteController.text = dish.priceNote;
+      _menuPremium = dish.premium;
+      _menuIncludesController.text = dish.includes.join(', ');
       _selectedMenuImageFile = null;
     });
   }
 
-  void _cancelMenuEditing() {
+  String _normalizeCategoryForDropdown(String category) {
+    final normalized = category.toLowerCase().trim();
+    if (normalized == 'autres_ceremonies' ||
+        normalized == 'autres cérémonies' ||
+        normalized == 'autres ceremonies') {
+      return 'Autres cérémonies';
+    }
+    if (normalized == 'espace_exterieur' ||
+        normalized == 'espace extérieur' ||
+        normalized == 'espace exterieur') {
+      return 'Espace extérieur';
+    }
+    if (normalized == 'services_traiteurs' ||
+        normalized == 'services traiteurs' ||
+        normalized == 'services traiteur') {
+      return 'Services traiteurs';
+    }
+    if (normalized == 'cocktail' || normalized == 'cocktails') return 'Cocktail';
+    if (normalized == 'mariage') return 'Mariage';
+    if (normalized == 'tous') return 'Tous';
+    return category;
+  }
+
+void _cancelMenuEditing() {
     setState(() {
       _editingMenuItem = null;
       _menuNameController.clear();
       _menuDescriptionController.clear();
       _menuPriceController.clear();
-      _menuCategoryController.clear();
+      _menuCategoryId = 'Mariage';
+      _menuDefaultMenuPackController.clear();
+      _menuTagController.clear();
+      _menuPriceNoteController.clear();
+      _menuIncludesController.clear();
+      _menuPremium = false;
       _selectedMenuImageFile = null;
     });
   }
@@ -1113,11 +1339,14 @@ class _AdminScreenState extends State<AdminScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _galleryLabelController.dispose();
+    _galleryAlbumTitleController.dispose();
     _menuNameController.dispose();
     _menuDescriptionController.dispose();
     _menuPriceController.dispose();
-    _menuCategoryController.dispose();
+    _menuTagController.dispose();
+    _menuDefaultMenuPackController.dispose();
+    _menuPriceNoteController.dispose();
+    _menuIncludesController.dispose();
     _apartmentTitleController.dispose();
     _apartmentDescriptionController.dispose();
     _apartmentPriceController.dispose();
