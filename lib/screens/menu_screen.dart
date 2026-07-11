@@ -43,7 +43,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
   List<Dish> get _visiblePackages {
     if (_selectedCategory == 'Tous') {
-      return _menuItems;
+      return _menuItems.where((item) => item.category != 'Services traiteurs' && item.category != 'Cocktail').toList();
     }
     return _menuItems.where((item) => item.category == _selectedCategory).toList();
   }

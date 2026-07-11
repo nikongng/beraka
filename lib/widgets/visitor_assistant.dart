@@ -449,13 +449,13 @@ $availabilityHint
               children: [
                 CircleAvatar(
                   backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  child: Icon(Icons.auto_awesome, color: theme.colorScheme.primary),
+                  child: const Text('🤖', style: TextStyle(fontSize: 20)),
                 ),
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Assistant Beraca', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    Text('assistant ia', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
                     Row(
                       children: [
                         Container(width: 8, height: 8, decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle)),
