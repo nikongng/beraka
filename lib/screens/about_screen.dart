@@ -74,7 +74,7 @@ class AboutScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Beraca\'s valley  est un établissement chaleureux dédié à la reception des vos événements. ' 
+          'Beraca\'s Valley est un établissement chaleureux dédié à la reception de vos événements. '
           'Nous offrons une expérience événementielle de qualité, un service attentionné et un cadre élégant pour toutes vos occasions.',
           style: TextStyle(
             fontSize: 16, 

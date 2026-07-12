@@ -1,4 +1,4 @@
-# Beraca's valley (Flutter)
+# Beraca's Valley (Flutter)
 
 Application Flutter cross-platform pour la gestion d'une salle de reception.
 

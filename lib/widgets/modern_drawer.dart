@@ -12,11 +12,12 @@ class ModernDrawer extends StatelessWidget {
     required this.onNavigate,
   });
 
+  // Order must match the pages / bottom nav indices in HomePage
   static const _menus = [
     ("Accueil", Icons.home_rounded),
     ("Menu", Icons.menu_rounded),
+    ("Je réserve", Icons.calendar_month_rounded),
     ("Appartements", Icons.apartment_rounded),
-    ("Mes réservations", Icons.history_rounded),
     ("Contact", Icons.call_rounded),
   ];
 
@@ -65,7 +66,7 @@ class ModernDrawer extends StatelessWidget {
                   const SizedBox(height: 18),
 
                   const Text(
-                    "BERACA'S",
+                    "BERACA'S VALLEY",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,

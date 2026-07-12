@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../models.dart';
 import '../services/gemini_service.dart';
@@ -141,16 +142,19 @@ class _VisitorAssistantState extends State<VisitorAssistant> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final stt.SpeechToText _speech = stt.SpeechToText();
+  final FlutterTts _tts = FlutterTts();
   
   final List<_Message> _messages = [
     const _Message(
       isUser: false,
-      text: 'Bonjour je suis beraca\'s assistant! Je suis là pour vous aider.',
+      text: 'Bonjour, je suis l\'assistant de Beraca\'s Valley ! Je suis là pour vous aider.',
     ),
   ];
   
   bool _loading = false;
   bool _speechAvailable = false;
+  bool _ttsAvailable = false;
+  bool _voiceEnabled = true;
   bool _isListening = false;
   String _voiceStatus = 'Prêt à écouter';
 
@@ -192,8 +196,8 @@ Espace extérieur :
   // Prix par invité pour le modèle "au couvert" (estimation)
   static const double _perGuestBasePrice = 15.0; // en $ par personne
 
-  static const String _companyName = 'Beraca’s Valley';
-  static const String _companyDescription = 'Beraca’s Valley est une salle de reception de charme, offrant une cuisine raffinée, des espaces de réception élégants et un service attentionné pour mariages, conférences et événements privés.';
+  static const String _companyName = 'Beraca\'s Valley';
+  static const String _companyDescription = 'Beraca\'s Valley est une salle de reception de charme, offrant une cuisine raffinée, des espaces de réception élégants et un service attentionné pour mariages, conférences et événements privés.';
   static const String _contactPhone = '+243 998 833 016';
   static const String _contactEmail = 'beracasvalley@gmail.com';
   static const String _contactAddress = '01, Av. Géomètre Ponga, Plateau Karavia, Lubumbashi - RDC';
@@ -202,6 +206,7 @@ Espace extérieur :
   void initState() {
     super.initState();
     _initSpeech();
+    _initTts();
   }
 
   @override
@@ -209,9 +214,24 @@ Espace extérieur :
     if (_speech.isListening) {
       _speech.stop();
     }
+    _tts.stop();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initTts() async {
+    try {
+      await _tts.setLanguage('fr-FR');
+      await _tts.setSpeechRate(0.45);
+      await _tts.setPitch(1.0);
+      await _tts.awaitSpeakCompletion(true);
+      _ttsAvailable = true;
+    } catch (_) {
+      _ttsAvailable = false;
+    }
+    if (!mounted) return;
+    setState(() {});
   }
 
   Future<void> _initSpeech() async {
@@ -285,7 +305,25 @@ Espace extérieur :
       }
     });
   }
+  Future<void> _speak(String text) async {
+    if (!_voiceEnabled || !_ttsAvailable || text.trim().isEmpty) return;
 
+    try {
+      await _tts.stop();
+      await _tts.speak(text);
+    } catch (_) {
+      // Ignorer les erreurs de TTS en runtime.
+    }
+  }
+
+  void _toggleVoiceOutput() {
+    setState(() {
+      _voiceEnabled = !_voiceEnabled;
+    });
+    if (!_voiceEnabled) {
+      _tts.stop();
+    }
+  }
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
@@ -312,6 +350,7 @@ Espace extérieur :
         setState(() {
           _messages.add(_Message(isUser: false, text: capacityReply));
         });
+        await _speak(capacityReply);
       } else {
         final directBooking = await _tryCreateReservationFromRequest(text, reservations);
         if (directBooking != null) {
@@ -319,6 +358,7 @@ Espace extérieur :
           setState(() {
             _messages.add(_Message(isUser: false, text: directBooking));
           });
+          await _speak(directBooking);
         } else {
           final reply = await GeminiService.generateReply(
             context: _buildAssistantContext(
@@ -336,6 +376,7 @@ Espace extérieur :
           setState(() {
             _messages.add(_Message(isUser: false, text: reply));
           });
+          await _speak(reply);
         }
       }
     } catch (error) {
@@ -489,34 +530,60 @@ $availabilityHint
               color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
             ),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _sendMessage(),
-                    decoration: InputDecoration(
-                      hintText: 'Parlez ou tapez votre message...',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-                      filled: true,
-                      fillColor: theme.colorScheme.surface,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => _sendMessage(),
+                        decoration: InputDecoration(
+                          hintText: 'Parlez ou tapez votre message...',
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                          filled: true,
+                          fillColor: theme.colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton.filledTonal(
-                  onPressed: _toggleListening,
-                  tooltip: _isListening ? 'Arrêter l’écoute' : 'Parler à l’assistant',
-                  icon: Icon(_isListening ? Icons.mic_off_rounded : Icons.mic_rounded),
-                ),
-                const SizedBox(width: 8),
-                FloatingActionButton.small(
-                  elevation: 0,
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: _toggleVoiceOutput,
+                      tooltip: _voiceEnabled ? 'Voix activée' : 'Voix désactivée',
+                      icon: Icon(_voiceEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton.filledTonal(
+                      onPressed: _toggleListening,
+                      tooltip: _isListening ? 'Arrêter l’écoute' : 'Parler à l’assistant',
+                      icon: Icon(_isListening ? Icons.mic_off_rounded : Icons.mic_rounded),
+                    ),
+                    const SizedBox(width: 8),
+                    FloatingActionButton.small(
+                      elevation: 0,
                   onPressed: _sendMessage,
                   child: const Icon(Icons.send_rounded),
                 )
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Icon(
+                  _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    _voiceStatus,
+                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+                ),
               ],
             ),
           ),

@@ -1607,22 +1607,22 @@ void _cancelMenuEditing() {
                 onGenerate: () async {
                   final reservation = _reservations.isNotEmpty ? _reservations.first : null;
                   final contextText = reservation == null
-                      ? 'Le client a demandé une réservation au restaurant Beraca’s Valley.'
+                      ? 'Le client a demandé une réservation au restaurant Beraca\'s Valley.'
                       : 'Réservation du client ${reservation.guestName} pour ${reservation.date.day}/${reservation.date.month}/${reservation.date.year} à ${reservation.time.format(context)} pour ${reservation.guests} personnes.';
                   return GeminiService.generateReply(
                     context: contextText,
-                    request: 'Rédige une réponse professionnelle, chaleureuse et concise pour confirmer ou remerciement la réservation.',
+                    request: 'Rédige une réponse professionnelle, chaleureuse et concise pour confirmer ou remercier la réservation.',
                   );
                 },
               ),
               const SizedBox(height: 12),
               _assistantActionCard(
-                title: 'Présentation de Beraca’s Valley',
+                title: 'Présentation de Beraca\'s Valley',
                 subtitle: 'Génère une proposition élégante pour présenter le lieu à un client.',
                 onGenerate: () async {
                   return GeminiService.generateReply(
-                    context: 'Beraca’s Valley est une salle de reception de charme, avec une ambiance chaleureuse, une cuisine raffinée et un cadre idéal pour les repas, les événements et les séjours.',
-                    request: 'Rédige une réponse convaincante et naturelle pour présenter Beraca’s Valley à un client potentiel.',
+                    context: 'Beraca\'s Valley est une salle de reception de charme, avec une ambiance chaleureuse, une cuisine raffinée et un cadre idéal pour les repas, les événements et les séjours.',
+                    request: 'Rédige une réponse convaincante et naturelle pour présenter Beraca\'s Valley à un client potentiel.',
                   );
                 },
               ),
