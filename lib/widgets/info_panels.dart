@@ -15,7 +15,6 @@ class InfoPanels extends StatelessWidget {
       ],
     );
   }
-
   @override
   Widget build(BuildContext context) {
     // Détection de la taille de l'écran (mobile si < 800px)

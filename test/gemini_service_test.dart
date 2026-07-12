@@ -45,7 +45,7 @@ void main() {
     final reply = GeminiService.buildLocalReply(request: 'Qui es-tu ?');
 
     expect(reply, isNotNull);
-    expect(reply, contains('Beraca's Valley'));
+    expect(reply, contains('Beraca\'s Valley'));
   });
 
   test('builds a fallback reply that explains the cause', () {

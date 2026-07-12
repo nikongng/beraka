@@ -173,7 +173,7 @@ Dernière demande du client : $request
     final asksAvailability = lowered.contains('dispo') || lowered.contains('disponible') || lowered.contains('date') || lowered.contains('libre') || lowered.contains('ouvert');
 
     if (asksWho) {
-      return 'Je suis l’assistant de Beraca's Valley spécialisé dans l’organisation d’événements. Je peux vous aider pour les tarifs, les packs et la préparation d’un événement.';
+      return "Je suis l’assistant de Beraca's Valley spécialisé dans l’organisation d’événements. Je peux vous aider pour les tarifs, les packs et la préparation d’un événement.";
     }
 
     if (asksPrice && mentionsEvent) {
@@ -239,7 +239,7 @@ Dernière demande du client : $request
     }
 
     if (lowered.contains('qui es-tu') || lowered.contains('qui est tu') || lowered.contains('qui êtes-vous') || lowered.contains('qui etes vous')) {
-      return 'Je suis l’assistant de Beraca's Valley spécialisé dans l’organisation d’événements. Le service est actuellement en mode de secours car $cause. Pour une aide précise, donnez votre type d’événement, la date et le nombre d’invités.';
+      return "Je suis l’assistant de Beraca's Valley spécialisé dans l’organisation d’événements. Le service est actuellement en mode de secours car $cause. Pour une aide précise, donnez votre type d’événement, la date et le nombre d’invités.";
     }
 
     return 'Je peux vous aider à organiser votre événement. Le service est actuellement en mode de secours car $cause. Indiquez votre besoin (anniversaire, mariage, conférence, date, nombre d’invités) pour que je vous donne une réponse plus précise.';

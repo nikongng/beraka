@@ -288,7 +288,7 @@ class _AdminScreenState extends State<AdminScreen> {
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
-                value: _adminSelectedEventType,
+                initialValue: _adminSelectedEventType,
                 decoration: const InputDecoration(labelText: 'Type d’événement'),
                 items: _adminReservationEventTypes
                     .map((type) => DropdownMenuItem(value: type, child: Text(type)))
@@ -299,7 +299,7 @@ class _AdminScreenState extends State<AdminScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: DropdownButtonFormField<String>(
-                value: _adminSelectedMenuPack,
+                initialValue: _adminSelectedMenuPack,
                 decoration: const InputDecoration(labelText: 'Menu pack'),
                 items: _menuItems
                     .map((item) => DropdownMenuItem(value: item.name, child: Text(item.name)))
@@ -479,7 +479,7 @@ class _AdminScreenState extends State<AdminScreen> {
         ],
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
-          value: _menuCategoryId,
+          initialValue: _menuCategoryId,
           decoration: const InputDecoration(labelText: 'Catégorie'),
           items: const [
             DropdownMenuItem(value: 'Mariage', child: Text('Mariage')),
@@ -1029,7 +1029,7 @@ class _AdminScreenState extends State<AdminScreen> {
   Future<void> _pickAdminReservationTime() async {
     final selectedTime = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay(hour: 19, minute: 0),
+      initialTime: const TimeOfDay(hour: 19, minute: 0),
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(

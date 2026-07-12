@@ -109,7 +109,7 @@ class _GalleryCardState extends State<_GalleryCard> {
               children: [
                 Positioned.fill(
                   child: Hero(
-                    tag: 'gallery_${widget.album.title}_${coverUrl}',
+                    tag: 'gallery_${widget.album.title}_$coverUrl',
                     child: imageWidget,
                   ),
                 ),
@@ -122,7 +122,7 @@ class _GalleryCardState extends State<_GalleryCard> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(hover ? .65 : .45),
+                          Colors.black.withValues(alpha: hover ? .65 : .45),
                         ],
                       ),
                     ),
@@ -163,7 +163,7 @@ class _GalleryCardState extends State<_GalleryCard> {
                             MaterialPageRoute(
                               builder: (_) => _GalleryPreviewPage(
                                 album: widget.album,
-                                tag: 'gallery_${widget.album.title}_${coverUrl}',
+                                tag: 'gallery_${widget.album.title}_$coverUrl',
                               ),
                               fullscreenDialog: true,
                             ),

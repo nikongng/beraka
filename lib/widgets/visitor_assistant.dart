@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'voice_platform.dart';
 import '../models.dart';
 import '../services/gemini_service.dart';
 import '../services/supabase_service.dart';
@@ -141,8 +140,8 @@ class VisitorAssistant extends StatefulWidget {
 class _VisitorAssistantState extends State<VisitorAssistant> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final stt.SpeechToText _speech = stt.SpeechToText();
-  final FlutterTts _tts = FlutterTts();
+  final SpeechRecognizerImpl _speech = SpeechRecognizerImpl();
+  final TextToSpeechImpl _tts = TextToSpeechImpl();
   
   final List<_Message> _messages = [
     const _Message(
@@ -221,15 +220,8 @@ Espace extérieur :
   }
 
   Future<void> _initTts() async {
-    try {
-      await _tts.setLanguage('fr-FR');
-      await _tts.setSpeechRate(0.45);
-      await _tts.setPitch(1.0);
-      await _tts.awaitSpeakCompletion(true);
-      _ttsAvailable = true;
-    } catch (_) {
-      _ttsAvailable = false;
-    }
+    await _tts.init();
+    _ttsAvailable = _tts.isAvailable;
     if (!mounted) return;
     setState(() {});
   }
@@ -305,6 +297,7 @@ Espace extérieur :
       }
     });
   }
+
   Future<void> _speak(String text) async {
     if (!_voiceEnabled || !_ttsAvailable || text.trim().isEmpty) return;
 
@@ -324,6 +317,7 @@ Espace extérieur :
       _tts.stop();
     }
   }
+
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
@@ -564,25 +558,27 @@ $availabilityHint
                     const SizedBox(width: 8),
                     FloatingActionButton.small(
                       elevation: 0,
-                  onPressed: _sendMessage,
-                  child: const Icon(Icons.send_rounded),
-                )
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(
-                  _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
-                  size: 16,
-                  color: theme.colorScheme.onSurfaceVariant,
+                      onPressed: _sendMessage,
+                      child: const Icon(Icons.send_rounded),
+                    )
+                  ],
                 ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    _voiceStatus,
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(
+                      _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        _voiceStatus,
+                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
