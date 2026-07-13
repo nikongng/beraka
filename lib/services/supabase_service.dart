@@ -238,15 +238,14 @@ class SupabaseService {
           .select('*')
           .order('title');
 
-      final menuPacks = _mapMenuRows(data as List<dynamic>, seen);
-      if (menuPacks.isNotEmpty) {
-        return menuPacks;
-      }
+      return _mapMenuRows(data as List<dynamic>, seen);
+    } on PostgrestException catch (error) {
+      print('Erreur Supabase lors du chargement du menu: ${error.message}');
+      throw error.message;
     } catch (e) {
-      print('SupabaseService.fetchMenu: Erreur lors du chargement ou table vide: $e');
+      print('Erreur inattendue fetchMenu: $e');
+      return []; 
     }
-
-    return _defaultMenuPacks();
   }
 
   static List<Dish> _mapMenuRows(List<dynamic> data, Set<String> seen) {
@@ -337,12 +336,6 @@ class SupabaseService {
       case 'webp': return 'image/webp';
       default: return 'application/octet-stream';
     }
-  }
-
-  static List<Dish> _defaultMenuPacks() {
-    return [
-      Dish(id: 'mariage_1', name: 'Décoration Basique', category: 'Mariage', description: 'Décoration basique.', price: 2500, priceText: '2 500 USD', includes: [], imageUrl: 'assets/images/decosimple.jpg'),
-    ];
   }
 
   static Future<List<Apartment>> fetchApartments() async {

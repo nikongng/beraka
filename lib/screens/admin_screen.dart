@@ -464,19 +464,16 @@ class _AdminScreenState extends State<AdminScreen> {
         TextField(
           controller: _menuDescriptionController,
           decoration: InputDecoration(
-            labelText: _isShortMenuCategory ? 'Détail du plat' : 'Description du pack',
+            labelText: _isShortMenuCategory ? 'Détail du pack' : 'Description du pack',
           ),
           maxLines: _isShortMenuCategory ? 4 : 2,
         ),
-        if (!_isShortMenuCategory) ...[
-          const SizedBox(height: 12),
-          TextField(
-            controller: _menuPriceController,
-            keyboardType: TextInputType.number,
-            decoration:
-                const InputDecoration(labelText: 'Prix du pack (USD)'),
-          ),
-        ],
+        const SizedBox(height: 12),
+        TextField(
+          controller: _menuPriceController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(labelText: 'Prix (USD)'),
+        ),
         const SizedBox(height: 12),
         DropdownButtonFormField<String>(
           initialValue: _menuCategoryId,
@@ -1402,9 +1399,10 @@ Future<void> _addMenuItem() async {
       return;
     }
 
-    if (!_isShortMenuCategory && price <= 0) {
+    // Le prix est maintenant exigé pour TOUTES les catégories
+    if (price <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Indiquez un prix valide pour le pack.')),
+        const SnackBar(content: Text('Veuillez indiquer un prix valide.')),
       );
       return;
     }
@@ -1442,7 +1440,7 @@ Future<void> _addMenuItem() async {
           : await SupabaseService.addMenuItem(dish);
 
       if (createdDish.id.isEmpty) {
-        throw 'Le plat n’a pas été enregistré.';
+        throw 'Le pack n’a pas été enregistré.';
       }
 
       // Nettoyage de tous les champs
@@ -1462,7 +1460,7 @@ Future<void> _addMenuItem() async {
       
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isEditing ? 'Pack modifié.' : 'Plat ajouté au menu.')),
+        SnackBar(content: Text(isEditing ? 'Pack modifié.' : 'Pack ajouté au menu.')),
       );
     } catch (error) {
       if (!mounted) return;
@@ -1541,12 +1539,12 @@ void _cancelMenuEditing() {
 
     try {
       if (dish.id.isEmpty) {
-        throw 'Le plat n’a pas d’identifiant valide.';
+        throw 'Le pack n’a pas d’identifiant valide.';
       }
       await SupabaseService.removeMenuItem(dish.id);
       await _loadMenuItems();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Plat supprimé du menu.')),
+        const SnackBar(content: Text('Pack supprimé du menu.')),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
