@@ -14,6 +14,9 @@ class Dish {
   final bool premium;
   final String description;
   final int price;
+  final int saturdayPrice;
+  final int friSunPrice;
+  final bool priceVarious;
   final String priceText;
   final List<String> includes;
   final String imageUrl;
@@ -30,6 +33,9 @@ class Dish {
     this.premium = false,
     required this.description,
     required this.price,
+    this.saturdayPrice = 0,
+    this.friSunPrice = 0,
+    this.priceVarious = false,
     this.priceText = '',
     this.includes = const [],
     required this.imageUrl,
@@ -67,10 +73,19 @@ class Dish {
               ? map['premium'] != 0
               : map['premium']?.toString().toLowerCase() == 'true',
       description: map['description']?.toString() ?? '',
-      price: map['price'] is int
+        price: map['price'] is int
           ? map['price'] as int
           : int.tryParse(map['price']?.toString() ?? '0') ?? 0,
-      priceText: map['price_text']?.toString() ?? '',
+          saturdayPrice: map['saturday_price'] is int
+          ? map['saturday_price'] as int
+          : int.tryParse(map['saturday_price']?.toString() ?? '0') ?? 0,
+          friSunPrice: map['fri_sun_price'] is int
+          ? map['fri_sun_price'] as int
+          : int.tryParse(map['fri_sun_price']?.toString() ?? '0') ?? 0,
+          priceVarious: map['price_various'] is bool
+            ? map['price_various'] as bool
+            : (map['price_various'] is int ? (map['price_various'] as int) != 0 : (map['price_various']?.toString().toLowerCase() == 'true')),
+        priceText: map['price_text']?.toString() ?? '',
       includes: includes,
       imageUrl: map['image_url']?.toString() ?? '',
     );
@@ -82,6 +97,9 @@ class Dish {
       'title': name,
       'description': description,
       'price': price,
+      if (saturdayPrice > 0) 'saturday_price': saturdayPrice,
+      if (friSunPrice > 0) 'fri_sun_price': friSunPrice,
+      if (priceVarious) 'price_various': priceVarious,
       'price_text': priceText,
       'includes': includes,
       'image_url': imageUrl,

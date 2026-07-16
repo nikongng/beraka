@@ -266,11 +266,26 @@ class _PackageDialogContent extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 14),
-        Text(
-          menuItem.priceText.isNotEmpty
-              ? menuItem.priceText
-              : '${menuItem.price.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ' ')} USD',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppTheme.primary),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!menuItem.priceVarious && (menuItem.price > 0 || menuItem.priceText.isNotEmpty)) ...[
+              Text(
+                menuItem.priceText.isNotEmpty
+                    ? menuItem.priceText
+                    : '${menuItem.price.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ' ')} USD',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: AppTheme.primary),
+              ),
+            ],
+            if (menuItem.saturdayPrice > 0) ...[
+              const SizedBox(height: 6),
+              Text('Prix Samedi : ${menuItem.saturdayPrice} USD', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.primary)),
+            ],
+            if (menuItem.friSunPrice > 0) ...[
+              const SizedBox(height: 6),
+              Text('Prix Vendredi & Dimanche : ${menuItem.friSunPrice} USD', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppTheme.primary)),
+            ],
+          ],
         ),
         const SizedBox(height: 14),
         Text(
@@ -425,13 +440,15 @@ class _PackageCardState extends State<_PackageCard> {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  package.priceText.isNotEmpty
-                      ? package.priceText
-                      : '${package.price.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ' ')} USD',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: accent),
-                ),
-                const SizedBox(height: 6),
+                if (!package.priceVarious) ...[
+                  Text(
+                    package.priceText.isNotEmpty
+                        ? package.priceText
+                        : '${package.price.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ' ')} USD',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: accent),
+                  ),
+                  const SizedBox(height: 6),
+                ],
                 IconButton(
                   onPressed: () => widget.onView(package),
                   icon: const Icon(Icons.remove_red_eye_rounded),

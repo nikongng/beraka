@@ -248,6 +248,26 @@ class SupabaseService {
     }
   }
 
+  // Paged fetch for admin screens
+  static Future<List<Dish>> fetchMenuPaged({int from = 0, int limit = 20}) async {
+    final seen = <String>{};
+    try {
+      final data = await supabase
+          .from('menu_packs')
+          .select('*')
+          .order('title')
+          .range(from, from + limit - 1);
+
+      return _mapMenuRows(data as List<dynamic>, seen);
+    } on PostgrestException catch (error) {
+      print('Erreur Supabase lors du chargement du menu (paged): ${error.message}');
+      throw error.message;
+    } catch (e) {
+      print('Erreur inattendue fetchMenuPaged: $e');
+      return [];
+    }
+  }
+
   static List<Dish> _mapMenuRows(List<dynamic> data, Set<String> seen) {
     return data
         .cast<Map<String, dynamic>>()
@@ -258,6 +278,12 @@ class SupabaseService {
           final priceValue = m['price'] is int
               ? m['price'] as int
               : int.tryParse(m['price']?.toString() ?? '0') ?? 0;
+            final saturdayPrice = m['saturday_price'] is int
+              ? m['saturday_price'] as int
+              : int.tryParse(m['saturday_price']?.toString() ?? '0') ?? 0;
+            final friSunPrice = m['fri_sun_price'] is int
+              ? m['fri_sun_price'] as int
+              : int.tryParse(m['fri_sun_price']?.toString() ?? '0') ?? 0;
           final includes = _parseIncludes(m['includes']);
           return Dish(
             id: m['id']?.toString() ?? '',
@@ -275,6 +301,11 @@ class SupabaseService {
                     : m['premium']?.toString().toLowerCase() == 'true',
             description: m['description']?.toString() ?? '',
             price: priceValue,
+            saturdayPrice: saturdayPrice,
+            friSunPrice: friSunPrice,
+            priceVarious: m['price_various'] is bool
+                ? m['price_various'] as bool
+                : (m['price_various'] is int ? (m['price_various'] as int) != 0 : (m['price_various']?.toString().toLowerCase() == 'true')),
             priceText: priceText,
             includes: includes,
             imageUrl: m['image_url']?.toString() ?? '',
@@ -352,6 +383,53 @@ class SupabaseService {
     }
   }
 
+  static Future<List<Apartment>> fetchApartmentsPaged({int from = 0, int limit = 20}) async {
+    try {
+      final data = await supabase
+          .from('apartments')
+          .select('*')
+          .order('price', ascending: true)
+          .range(from, from + limit - 1);
+      return (data as List<dynamic>)
+          .map((e) => Apartment.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on PostgrestException catch (error) {
+      throw error.message;
+    }
+  }
+
+  static Future<List<GalleryPhoto>> fetchGalleryPhotosPaged({int from = 0, int limit = 30}) async {
+    try {
+      final data = await supabase
+          .from('gallery')
+          .select('*')
+          .order('created_at', ascending: false)
+          .range(from, from + limit - 1);
+
+      return (data as List<dynamic>)
+          .map((e) => GalleryPhoto.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on PostgrestException catch (error) {
+      throw error.message;
+    }
+  }
+
+  static Future<List<Reservation>> fetchReservationsPaged({int from = 0, int limit = 20}) async {
+    try {
+      final data = await supabase
+          .from('reservations')
+          .select('*')
+          .order('date', ascending: true)
+          .range(from, from + limit - 1);
+
+      return (data as List<dynamic>)
+          .map((e) => Reservation.fromMap(e as Map<String, dynamic>))
+          .toList();
+    } on PostgrestException catch (error) {
+      throw error.message;
+    }
+  }
+
   static Future<Apartment> addApartment(Apartment apartment) async {
     try {
       final data = await supabase
@@ -371,6 +449,20 @@ class SupabaseService {
           .from('apartments')
           .update({'image_url': jsonEncode(imageUrls)})
           .eq('id', apartmentId)
+          .select()
+          .single();
+      return Apartment.fromMap(data as Map<String, dynamic>);
+    } on PostgrestException catch (error) {
+      throw error.message;
+    }
+  }
+
+  static Future<Apartment> updateApartment(Apartment apartment) async {
+    try {
+      final data = await supabase
+          .from('apartments')
+          .update(apartment.toMap())
+          .eq('id', apartment.id)
           .select()
           .single();
       return Apartment.fromMap(data as Map<String, dynamic>);
