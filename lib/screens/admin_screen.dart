@@ -101,6 +101,9 @@ class _AdminScreenState extends State<AdminScreen> {
         .where((r) => r.status.toLowerCase().contains('confirm'))
         .length;
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPhone = screenWidth < 420;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -109,21 +112,40 @@ class _AdminScreenState extends State<AdminScreen> {
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _loadReservations,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Rafraîchir'),
+            // Smaller buttons on phones
+            if (isPhone) ...[
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _loadReservations,
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: const Text('Rafraîchir'),
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 10), textStyle: const TextStyle(fontSize: 14)),
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            ElevatedButton.icon(
-              onPressed: _logout,
-              icon: const Icon(Icons.logout),
-              label: const Text('Se déconnecter'),
-              style:
-                  ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
-            ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: _logout,
+                icon: const Icon(Icons.logout),
+                color: Theme.of(context).colorScheme.error,
+                tooltip: 'Se déconnecter',
+              ),
+            ] else ...[
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _loadReservations,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Rafraîchir'),
+                ),
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton.icon(
+                onPressed: _logout,
+                icon: const Icon(Icons.logout),
+                label: const Text('Se déconnecter'),
+                style:
+                    ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+              ),
+            ]
           ],
         ),
         const SizedBox(height: 16),
@@ -169,30 +191,33 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Widget _adminStatCard(String label, String value, IconData icon) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPhone = screenWidth < 420;
+    final cardWidth = isPhone ? (screenWidth - 48) / 2 : 180;
     return Container(
-      width: 180,
-      padding: const EdgeInsets.all(18),
+      width: cardWidth,
+      padding: EdgeInsets.all(isPhone ? 12 : 18),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 12,
-              offset: const Offset(0, 5)),
+              blurRadius: isPhone ? 6 : 12,
+              offset: isPhone ? const Offset(0, 3) : const Offset(0, 5)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 32),
-          const SizedBox(height: 16),
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: isPhone ? 24 : 32),
+          SizedBox(height: isPhone ? 8 : 16),
           Text(value,
               style:
-                  const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
+                  TextStyle(fontSize: isPhone ? 20 : 28, fontWeight: FontWeight.bold)),
+          SizedBox(height: isPhone ? 6 : 8),
           Text(label,
-              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+              style: TextStyle(fontSize: isPhone ? 12 : 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ],
       ),
     );
