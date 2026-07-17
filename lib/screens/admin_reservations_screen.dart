@@ -197,7 +197,7 @@ class _AdminReservationsScreenState extends State<AdminReservationsScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+      barrierColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
       builder: (context) {
         final dateString = '${reservation.date.day.toString().padLeft(2, '0')}/${reservation.date.month.toString().padLeft(2, '0')}/${reservation.date.year}';
         final timeString = reservation.time.format(context);
@@ -216,7 +216,7 @@ class _AdminReservationsScreenState extends State<AdminReservationsScreen> {
                   width: 48,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -247,7 +247,7 @@ class _AdminReservationsScreenState extends State<AdminReservationsScreen> {
               Text('Statut : ${reservation.status}'),
               if (reservation.note.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                Text('Notes :', style: const TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Notes :', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 Text(reservation.note),
               ],
@@ -321,7 +321,7 @@ class _AdminReservationsScreenState extends State<AdminReservationsScreen> {
                               children: [
                                 Expanded(
                                   child: DropdownButtonFormField<String>(
-                                    value: _selectedEventType,
+                                    initialValue: _selectedEventType,
                                     decoration: const InputDecoration(labelText: 'Type d’événement'),
                                     items: _eventTypes
                                         .map((type) => DropdownMenuItem(value: type, child: Text(type)))
@@ -332,7 +332,7 @@ class _AdminReservationsScreenState extends State<AdminReservationsScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: DropdownButtonFormField<String>(
-                                    value: _selectedMenuPack,
+                                    initialValue: _selectedMenuPack,
                                     decoration: const InputDecoration(labelText: 'Menu pack'),
                                     items: _menuItems
                                         .map((item) => DropdownMenuItem(value: item.name, child: Text(item.name)))

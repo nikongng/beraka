@@ -114,8 +114,8 @@ class _AdminPacksScreenState extends State<AdminPacksScreen> {
           await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AdminPackForm()));
           await _loadItems();
         },
-        child: const Icon(Icons.add),
         tooltip: 'Ajouter un pack',
+        child: const Icon(Icons.add),
       ),
     );
   }

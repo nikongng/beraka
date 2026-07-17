@@ -229,6 +229,24 @@ class SupabaseService {
     }
   }
 
+  static Future<String> uploadMenuImage(Uint8List bytes, String filename) async {
+    try {
+      final safeName = filename.replaceAll(RegExp(r'[^A-Za-z0-9_.-]'), '_');
+      final filePath = 'menu_packs/${DateTime.now().millisecondsSinceEpoch}_$safeName';
+      final contentType = _guessMimeType(filename);
+
+      await supabase.storage.from(_galleryBucket).uploadBinary(
+            filePath,
+            bytes,
+            fileOptions: FileOptions(contentType: contentType, upsert: true),
+          );
+
+      return '$_supabaseUrl/storage/v1/object/public/$_galleryBucket/$filePath';
+    } on PostgrestException catch (error) {
+      throw error.message;
+    }
+  }
+
   static Future<List<Dish>> fetchMenu() async {
     final seen = <String>{};
 

@@ -95,6 +95,7 @@ class Dish {
     final data = {
       if (id.isNotEmpty) 'id': id,
       'title': name,
+      if (category.isNotEmpty) 'category': category,
       'description': description,
       'price': price,
       if (saturdayPrice > 0) 'saturday_price': saturdayPrice,

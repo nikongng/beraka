@@ -24,6 +24,15 @@ class _AdminPackFormState extends State<AdminPackForm> {
   bool _priceVarious = false;
   PlatformFile? _image;
   bool _isSaving = false;
+  final List<String> _categories = [
+    'Mariage',
+    'Cocktail',
+    'Autres cérémonies',
+    'Espace extérieur',
+    'Services traiteurs',
+    'Tous',
+  ];
+  String? _selectedCategory;
 
   @override
   void initState() {
@@ -36,6 +45,9 @@ class _AdminPackFormState extends State<AdminPackForm> {
       _friSunPrice.text = widget.dish!.friSunPrice.toString();
       _premium = widget.dish!.premium;
       _priceVarious = widget.dish!.priceVarious;
+      _selectedCategory = widget.dish!.category.isNotEmpty ? widget.dish!.category : _categories.first;
+    } else {
+      _selectedCategory = _categories.first;
     }
   }
 
@@ -52,12 +64,13 @@ class _AdminPackFormState extends State<AdminPackForm> {
     try {
       String imageUrl = widget.dish?.imageUrl ?? '';
       if (_image?.bytes != null) {
-        imageUrl = await SupabaseService.uploadApartmentImage(_image!.bytes!, _image!.name);
+        imageUrl = await SupabaseService.uploadMenuImage(_image!.bytes!, _image!.name);
       }
       final dish = Dish(
         id: widget.dish?.id ?? '',
         name: _name.text.trim(),
-        category: widget.dish?.category ?? 'Tous',
+        category: _selectedCategory ?? widget.dish?.category ?? 'Tous',
+        categoryId: _mapCategoryId(_selectedCategory ?? widget.dish?.category),
         description: _description.text.trim(),
         price: int.tryParse(_price.text.trim()) ?? 0,
         saturdayPrice: int.tryParse(_satPrice.text.trim()) ?? 0,
@@ -66,7 +79,6 @@ class _AdminPackFormState extends State<AdminPackForm> {
         priceText: (_price.text.trim().isNotEmpty ? '${_price.text.trim()} USD' : ''),
         includes: widget.dish?.includes ?? [],
         imageUrl: imageUrl,
-        categoryId: widget.dish?.categoryId ?? '',
         defaultEventType: widget.dish?.defaultEventType ?? '',
         tag: widget.dish?.tag ?? '',
         priceNote: widget.dish?.priceNote ?? '',
@@ -89,6 +101,17 @@ class _AdminPackFormState extends State<AdminPackForm> {
     }
   }
 
+  String _mapCategoryId(String? name) {
+    final n = (name ?? '').toLowerCase();
+    if (n.contains('mariage')) return 'mariage';
+    if (n.contains('cocktail')) return 'cocktail';
+    if (n.contains('autres')) return 'autres_ceremonies';
+    if (n.contains('extérieur') || n.contains('exterieur')) return 'exterieur';
+    if (n.contains('traiteur') || n.contains('traiteurs')) return 'traiteurs';
+    if (n.contains('tous')) return 'tous';
+    return n.isNotEmpty ? n.replaceAll(' ', '_') : 'tous';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,6 +126,26 @@ class _AdminPackFormState extends State<AdminPackForm> {
                 controller: _name,
                 decoration: const InputDecoration(labelText: 'Nom'),
                 validator: (v) => v == null || v.trim().isEmpty ? 'Nom requis' : null,
+              ),
+              const SizedBox(height: 8),
+              // Image preview (existing or newly selected)
+              if (_image?.bytes != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.memory(_image!.bytes!, height: 140, width: double.infinity, fit: BoxFit.cover),
+                )
+              else if (widget.dish?.imageUrl != null && widget.dish!.imageUrl.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(widget.dish!.imageUrl, height: 140, width: double.infinity, fit: BoxFit.cover),
+                ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedCategory,
+                decoration: const InputDecoration(labelText: 'Catégorie'),
+                items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                onChanged: (v) => setState(() => _selectedCategory = v),
+                validator: (v) => v == null || v.trim().isEmpty ? 'Choisir une catégorie' : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
