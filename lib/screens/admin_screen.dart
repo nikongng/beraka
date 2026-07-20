@@ -195,7 +195,7 @@ class _AdminScreenState extends State<AdminScreen> {
     final isPhone = screenWidth < 420;
     final cardWidth = isPhone ? (screenWidth - 48) / 2 : 180;
     return Container(
-      width: cardWidth,
+      width: cardWidth.toDouble(),
       padding: EdgeInsets.all(isPhone ? 12 : 18),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,

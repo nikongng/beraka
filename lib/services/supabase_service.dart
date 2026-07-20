@@ -341,6 +341,7 @@ class SupabaseService {
   static String _normalizeCategory(String category) {
     final lower = category.toLowerCase().trim();
     if (lower.contains('mariage')) return 'Mariage';
+    if (lower.contains('traiteur')) return 'Services traiteurs'; // <-- AJOUTER
     if (lower.contains('autres') || lower.contains('cérémonies') || lower.contains('ceremonies')) return 'Autres cérémonies';
     if (lower.contains('cocktail') || lower.contains('cocktails')) return 'Cocktail';
     if (lower.contains('extérieur') || lower.contains('exterieur')) return 'Espace extérieur';

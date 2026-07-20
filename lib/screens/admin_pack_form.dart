@@ -24,6 +24,7 @@ class _AdminPackFormState extends State<AdminPackForm> {
   bool _priceVarious = false;
   PlatformFile? _image;
   bool _isSaving = false;
+  
   final List<String> _categories = [
     'Mariage',
     'Cocktail',
@@ -45,10 +46,23 @@ class _AdminPackFormState extends State<AdminPackForm> {
       _friSunPrice.text = widget.dish!.friSunPrice.toString();
       _premium = widget.dish!.premium;
       _priceVarious = widget.dish!.priceVarious;
-      _selectedCategory = widget.dish!.category.isNotEmpty ? widget.dish!.category : _categories.first;
+      
+      // LOGIQUE CORRIGÉE : On normalise la catégorie avant de l'assigner
+      _selectedCategory = _normalizeForDropdown(widget.dish!.category);
     } else {
       _selectedCategory = _categories.first;
     }
+  }
+
+  // Helper pour faire correspondre la valeur de la DB à la liste du Dropdown
+  String _normalizeForDropdown(String category) {
+    final lower = category.toLowerCase();
+    if (lower.contains('traiteur')) return 'Services traiteurs';
+    if (lower.contains('mariage')) return 'Mariage';
+    if (lower.contains('cocktail')) return 'Cocktail';
+    if (lower.contains('autres') || lower.contains('ceremonies')) return 'Autres cérémonies';
+    if (lower.contains('exterieur') || lower.contains('extérieur')) return 'Espace extérieur';
+    return _categories.contains(category) ? category : _categories.first;
   }
 
   Future<void> _pickImage() async {
@@ -128,7 +142,6 @@ class _AdminPackFormState extends State<AdminPackForm> {
                 validator: (v) => v == null || v.trim().isEmpty ? 'Nom requis' : null,
               ),
               const SizedBox(height: 8),
-              // Image preview (existing or newly selected)
               if (_image?.bytes != null)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
@@ -141,7 +154,7 @@ class _AdminPackFormState extends State<AdminPackForm> {
                 ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                initialValue: _selectedCategory,
+                value: _selectedCategory, // CHANGÉ: de initialValue à value
                 decoration: const InputDecoration(labelText: 'Catégorie'),
                 items: _categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
                 onChanged: (v) => setState(() => _selectedCategory = v),
