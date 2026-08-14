@@ -53,7 +53,7 @@ class ModernDrawer extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
-                      'assets/images/logo.jpg',
+                      'assets/images/logo.png',
                       width: 72,
                       height: 72,
                       fit: BoxFit.cover, // Ajuste l'image pour remplir le cadre
