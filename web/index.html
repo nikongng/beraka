@@ -41,6 +41,14 @@
         document.write('The app must be served over HTTP.');
       }
     </script>
+
+    <!-- Configuration pour forcer le rendu HTML -->
+    <script>
+      window.flutterConfiguration = {
+        renderer: 'html'
+      };
+    </script>
+
     <script src="main.dart.js" type="application/javascript"></script>
   </body>
 </html>
