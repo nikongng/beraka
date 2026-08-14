@@ -49,17 +49,14 @@ class ModernDrawer extends StatelessWidget {
               child: Column(
                 children: [
 
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Icon(
-                      Icons.hotel_rounded,
-                      color: AppTheme.primary,
-                      size: 38,
+                  // Logo personnalisé
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      'assets/images/logo.jpg',
+                      width: 72,
+                      height: 72,
+                      fit: BoxFit.cover, // Ajuste l'image pour remplir le cadre
                     ),
                   ),
 
