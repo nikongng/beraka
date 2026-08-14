@@ -103,6 +103,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
+        // ===== NOUVEAU BLOC SEO (texte visible pour Google) =====
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Beraca's Valley",
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Salle de réception prestigieuse à Lubumbashi, RDC",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Réservez votre événement en ligne : mariages, conférences, anniversaires et plus encore. Notre équipe vous accueille dans un cadre élégant et moderne.",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          ),
+        ),
+        // ======================================================
         SliverToBoxAdapter(
           child: HeroSection(
             onReservation: () => widget.onNavigate(2),
