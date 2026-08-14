@@ -41,7 +41,7 @@ flutter:
 
   assets:
     - assets/images/          # Inclut tous les fichiers du dossier
-    - assets/images/logo.jpg  # Ajout explicite (optionnel mais recommandé)
+    - assets/images/logo.png  # Ajout explicite (optionnel mais recommandé)
     - flutter_01.png
     - flutter_02.png
     - assets/.env
